@@ -6,9 +6,10 @@ import { resolve } from 'path';
 import { homedir } from 'os';
 import { existsSync, mkdirpSync, readdirSync, unlinkSync, writeFileSync } from 'fs-extra';
 import moment from 'moment';
+import multer from 'multer';
 
 const bodyParser = require('body-parser');
-
+const upload = multer();
 
 const APP = express();
 const SERVER = http.createServer(APP);
@@ -21,8 +22,8 @@ APP.use(bodyParser.urlencoded({ extended: false }))
 
 // parse application/json
 APP.use(bodyParser.json())
-
-
+// for parsing multipart/form-data
+APP.use(upload.array('files')); 
 const IO = new Server(SERVER, {
   cors: {
     origin: "*",

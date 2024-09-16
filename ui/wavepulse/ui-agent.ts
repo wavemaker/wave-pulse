@@ -86,12 +86,12 @@ export class UIAgent extends Agent {
     }
 
     saveSessionData(name: string) {
-        return axios.post(`${this.httpurl}/session/data`, {
-            name: name,
-            content: JSON.stringify(this.currentSessionData)
-        }, {
+        const form = new FormData();
+        form.append('name', name);
+        form.append('content', JSON.stringify(this.currentSessionData));
+        return axios.post(`${this.httpurl}/session/data`,form,  {
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'multipart/form'
             }
         });
     }
