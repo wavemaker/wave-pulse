@@ -1,0 +1,11 @@
+# build directory
+build
+
+#dependencies
+node_modules
+
+#OS files
+.DS_Store
+
+#IDE files
+.vscode
