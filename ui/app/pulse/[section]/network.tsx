@@ -1,8 +1,18 @@
+import React from "react";
 import { KeyValuePair, KeyValueProps } from "@/components/key-pair";
 import { Accordion, AccordionItem, Button, Tab, Table, Tabs } from "@nextui-org/react";
 import { CloseIcon } from "@nextui-org/shared-icons";
 import { NetworkRequest } from "@wavemaker/wavepulse-agent/src/types";
 import { useEffect, useState } from "react";
+import {Search} from '@/components/search'
+import {DropdownComponent} from '@/components/dropdown'
+
+const logColors = {
+    get: 'text-green-600 bg-green-200  border-green-600',
+    put: 'text-orange-600 bg-orange-200  border-orange-600',
+    post: 'text-orange-600 bg-orange-200  border-orange-600',
+    delete: 'text-red-600 bg-red-200  border-red-600'
+} as any;
 
 export type Props = {
     requests: NetworkRequest[]
@@ -69,10 +79,70 @@ const Header = (props: {
     );
 };
 
+
+
 export const Network = (props: Props) => {
     const [selectedReq, setSelectedReq] = useState<NetworkRequest>(null as any);
     const [payload, setPayload] = useState<KeyValueProps>();
     const [response, setResponse] = useState('');
+
+    //dropdown and search
+    const allOptions: any = ["get", "put", "post", "delete", "all"]; //dropdown
+    const [selectedKeys, setSelectedKeys] = useState(new Set(allOptions));
+    const [filteredOptions, setFilterdOptions] = useState(allOptions);
+    const [searchTerm, setSearchTerm] = useState("");   //search
+
+    const onSearchChangeCallback = (value:string) => {
+        setSearchTerm(value);
+    }
+    const onSelectionChangecallBack = (value:any) => {
+        setSelectedKeys(value)
+    }
+    const selectedValue = React.useMemo(
+        () => Array.from(selectedKeys).join(", ").replaceAll("_", " "),
+        [selectedKeys]
+    );
+    const itemonPressCallback = (option: string) => {
+        const options = [...filteredOptions];
+        let updatedOptions = [];
+    
+        if (filteredOptions.includes(option)) {
+          if (option !== "all") 
+          {
+            updatedOptions = options.filter(
+              (i: string) => i != "all" && i != option
+            );
+          }
+          else
+          {
+            updatedOptions = options.filter((i: string) => false);
+          }
+          setFilterdOptions(updatedOptions);
+          option !== "all" && updatedOptions.length >= 1
+            ? setSelectedKeys(new Set(updatedOptions))
+            : setSelectedKeys(new Set(["hide all"]));
+        }
+        else
+        {
+          if (option === "all") {
+            let updatedOptions = allOptions.filter((d: string) => true);
+            setFilterdOptions(updatedOptions);
+            setSelectedKeys(new Set(updatedOptions));
+          } else {
+            options.push(option);
+            setFilterdOptions(options);
+          }
+        }
+      };
+    const searchConditionCallback =(log:any) => {
+        return searchTerm === ""
+        ? true
+        : typeof log.name === "string" 
+          ? log.name
+              .toLowerCase()
+              ?.includes(searchTerm.toLowerCase()) 
+          : false;
+    } 
     useEffect(() => {
         if (!selectedReq) {
             setPayload(null as any);
@@ -123,20 +193,42 @@ export const Network = (props: Props) => {
     const totalTime = endTime - startTime;
     return (
         <div className="w-full h-full flex flex-row relative">
-            <div className="flex-1 overflow-x-hidden h-full overflow-y-auto">
-                <div className="flex flex-row border border-x-0 px-4 py-1 w-svw">
+            <div className="flex-1 overflow-x-hidden h-full overflow-y-auto ">
+               
+                <div className=" bg-zinc-100 px-4 py-1 flex flex-row content-center sticky top-0 w-full ">
+        
+                    <div className="flex flex-1 flex-col justify-center ">
+                    <Search 
+                        onSearchChange={onSearchChangeCallback}    
+                        searchTerm={searchTerm}
+                    />
+                </div>
+
+                <div className="flex flex-1 flex-wrap flex-row content-center justify-end">
+                    <DropdownComponent allOptions={allOptions} 
+                        itemonPressCallback={itemonPressCallback} 
+                        onSelectionChangecallBack={onSelectionChangecallBack} 
+                        selectedKeys={selectedKeys} 
+                        selectedValue={selectedValue}
+                    />
+                </div>
+            </div>
+
+                <div className="flex flex-row border border-x-0 px-4 py-1 w-svw sticky top-0 bg-zinc-100">
                     <div className="flex-shrink-0 text-xs text-color w-2/12 font-bold">Name</div>
                     <div className="flex-shrink-0 px-8 text-xs w-1/12 font-bold">Method</div>
                     <div className="flex-shrink-0 px-8 text-xs w-1/12 font-bold">Status</div>
                     <div className="flex-shrink-0 px-8 text-xs w-1/12 font-bold">Time</div>
                     <div className="px-8 text-xs w-7/12 font-bold">Waterfall</div>
                 </div>
+              
             {
+                
                 props.requests.map((r, i) => {
                     const mx = Math.round(((r.req as any).__startTime - startTime) / totalTime * 100);
                     const w = Math.round(((r.req as any).__endTime - (r.req as any).__startTime) / totalTime * 100);
-                    return (
-                        <div key={r.id} 
+                    return filteredOptions.includes(r.method) && searchConditionCallback(r) ? (
+                        <div key={`${r.path}-${r.id}`} 
                             onClick={() => {
                                 setSelectedReq(r);
                             }} 
@@ -145,7 +237,8 @@ export const Network = (props: Props) => {
                                 + (r === selectedReq ? 'bg-zinc-100' : '' )
                             }>
                             <div className="flex-shrink-0 text-xs text-color w-2/12">{r.name}</div>
-                            <div className="flex-shrink-0 px-8 text-xs w-1/12">{r.method.toUpperCase()}</div>
+                            <div className={"flex-shrink-0 px-0 text-xs w-1/12 text-center border rounded-lg " + (logColors[r.method] || '')}>
+                            <span>{r.method.toUpperCase()}</span></div>
                             <div className="flex-shrink-0 px-8 text-xs w-1/12">{r.status}</div>
                             <div className="flex-shrink-0 px-8 text-xs w-1/12">{r.time}</div>
                             <div className="px-8 text-xs w-7/12">
@@ -155,7 +248,7 @@ export const Network = (props: Props) => {
                                 }}></div>
                             </div>
                         </div>
-                    );
+                    )  : (<></>);
                 })
             }
             </div>
