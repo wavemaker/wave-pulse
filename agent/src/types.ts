@@ -46,3 +46,11 @@ export type WidgetNode = {
     children: WidgetNode[],
     selected?: boolean;
 };
+
+export type TimelineEvent<T> = {
+    name: 'APP_STARTUP' | 'VARIABLE_INVOKE' | 'PAGE_READY';
+    data: T;
+    startTime: number;
+    endTime: number;
+    timestamp: number;
+};

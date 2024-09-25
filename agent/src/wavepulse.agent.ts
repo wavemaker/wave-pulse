@@ -53,6 +53,25 @@ function wrapConsole() {
 function listenPageEvents() {
     handler.subscribe('pageReady', (p: any) => {
         currentPage = p;
+        wavePulseAgent && wavePulseAgent.notify(EVENTS.TIMELINE.EVENT, 'event', [{
+            name: 'PAGE_READY',
+            data: {
+                name: currentPage.pageName
+            },
+            startTime: (handler as any).appConfig.diagnostics.pageStartTime,
+            endTime: (handler as any).appConfig.diagnostics.pageReadyTime
+        }]);
+    });
+    handler.subscribe('pageAttached', (p: any) => {
+        currentPage = p;
+        wavePulseAgent && wavePulseAgent.notify(EVENTS.TIMELINE.EVENT, 'event', [{
+            name: 'PAGE_READY',
+            data: {
+                name: currentPage.pageName
+            },
+            startTime: (handler as any).appConfig.diagnostics.pageStartTime,
+            endTime: (handler as any).appConfig.diagnostics.pageReadyTime
+        }]);
     });
     handler.subscribe('pageDestroyed', (p: any) => {
         currentPage = null;
@@ -61,10 +80,27 @@ function listenPageEvents() {
 
 function listenVariableEvents() {
     handler.subscribe('beforeInvoke', (v: any) => {
-        wavePulseAgent && wavePulseAgent.notify(EVENTS.VARIABLE.BEFORE_INVOKE, 'event', [v]);
+        wavePulseAgent && wavePulseAgent.notify(EVENTS.VARIABLE.BEFORE_INVOKE, 'event', []);
+        v.__diagnostics = v.__diagnostics || {};
+        v.__diagnostics.invocationStartTime = Date.now();
+        v.__diagnostics.processed = false;
     });
     handler.subscribe('afterInvoke', (v: any) => {
-        wavePulseAgent && wavePulseAgent.notify(EVENTS.VARIABLE.AFTER_INVOKE, 'event', [v]);
+        wavePulseAgent && wavePulseAgent.notify(EVENTS.VARIABLE.AFTER_INVOKE, 'event', []);
+        if (v.__diagnostics.processed) {
+            return;
+        }
+        v.__diagnostics.invocationEndTime = Date.now();
+        v.__diagnostics.processed = true;
+        wavePulseAgent && wavePulseAgent.notify(EVENTS.TIMELINE.EVENT, 'event', [{
+            name: 'VARIABLE_INVOKE',
+            data: {
+                name: v.name,
+                context: v._context === handler ? 'App' : v._context.pageName
+            },
+            startTime: v.__diagnostics.invocationStartTime,
+            endTime: v.__diagnostics.invocationEndTime
+        }]);
     });
 }
 
@@ -222,6 +258,7 @@ export const createWavePulseAgent = (args: {
     debugServerUrl?: string, 
     handler: Handler,
     agent?: Agent}) => {
+    handler = args.handler;
     if (args.agent) {
         wavePulseAgent = args.agent
     } else {
@@ -229,8 +266,20 @@ export const createWavePulseAgent = (args: {
             'url': args.debugServerUrl || ''
         }));
         wavePulseAgent = wavePulseAgent;
+        wavePulseAgent && wavePulseAgent.notify(EVENTS.TIMELINE.EVENT, 'event', [{
+            name: 'APP_STARTUP',
+            startTime: (handler as any).appConfig.diagnostics.appStartTime,
+            endTime: (handler as any).appConfig.diagnostics.appReadyTime
+        }]);
+        /*wavePulseAgent && wavePulseAgent.notify(EVENTS.TIMELINE.EVENT, 'event', [{
+            name: 'PAGE_READY',
+            data: {
+                name: currentPage.pageName
+            },
+            startTime: (handler as any).appConfig.diagnostics.pageStartTime,
+            endTime: (handler as any).appConfig.diagnostics.pageReadyTime
+        }]);*/
     }
-    handler = args.handler;
     if (handler) {
         listenPageEvents();
         listenVariableEvents();

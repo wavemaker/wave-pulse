@@ -12,6 +12,9 @@ export const EVENTS = {
     SERVICE: {
         BEFORE_CALL: 'service_before_call',
         AFTER_CALL: 'service_after_call'
+    },
+    TIMELINE: {
+        EVENT: 'timeline-event'
     }
 };
 

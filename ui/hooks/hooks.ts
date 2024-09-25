@@ -139,10 +139,10 @@ export const useNetworkRequests = () => {
 
 export const useComponentTree = () => {
     const uiAgent = useContext(UIAgentContext);
+    const [componentTree, setComponentTree] = useState([] as any);
     useEffect(() => {
         setComponentTree(uiAgent.sessionData.componentTree || []);
     }, [uiAgent.sessionData]);
-    const [componentTree, setComponentTree] = useState([] as any);
     const highlight = useCallback((widetId: string) => {
         uiAgent.invoke(CALLS.WIDGET.HIGHLIGHT, [widetId]);
     }, []);
@@ -156,4 +156,25 @@ export const useComponentTree = () => {
         uiAgent.currentSessionData.componentTree = componentTree;
     }, [componentTree]);
     return {componentTree, refreshComponentTree, highlight};
+};
+
+export const useTimelineLog = () => {
+    const uiAgent = useContext(UIAgentContext);
+    const [timelineLogs, setTimelineLogs] = useState([] as LogInfo[]);
+    const clearTimelineLogs = useCallback(() => {
+        setTimelineLogs([]);
+    }, [timelineLogs]);
+    const startProfile = useCallback(() => {
+        return uiAgent.subscribe(EVENTS.TIMELINE.EVENT, (args) => {
+            const logInfo = args[0] as LogInfo;
+            setTimelineLogs(timelineLogs => [...timelineLogs, {...logInfo}]);
+        });
+    }, [uiAgent]);
+    useEffect(() => {
+        setTimelineLogs(uiAgent.sessionData.timelineLogs || []);
+    }, [uiAgent.sessionData]);
+    useEffect(() => {
+        uiAgent.currentSessionData.timelineLogs = timelineLogs;
+    }, [timelineLogs]);
+    return {timelineLogs, clearTimelineLogs, startProfile};
 };
