@@ -1,5 +1,5 @@
 "use client";
-import { AppInfo, NetworkRequest, LogInfo, PlatformInfo } from "@wavemaker/wavepulse-agent/src/types";
+import { AppInfo, NetworkRequest, LogInfo, PlatformInfo, TimelineEvent } from "@wavemaker/wavepulse-agent/src/types";
 import { UIAgent } from "@/wavepulse/ui-agent";
 import { CALLS, EVENTS } from "@wavemaker/wavepulse-agent/src/constants";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
@@ -151,6 +151,15 @@ export const useComponentTree = () => {
             setComponentTree(data);
         });
     }, []);
+    useEffect(() => {
+        const destroy =  uiAgent.subscribe(EVENTS.TIMELINE.EVENT, (args) => {
+            const logInfo = args[0] as TimelineEvent<any>;
+            if (logInfo.name === 'PAGE_READY') {
+                refreshComponentTree();
+            }
+        });
+        return destroy;
+    }, [refreshComponentTree]);
     useEffect(refreshComponentTree, []);
     useEffect(() => {
         uiAgent.currentSessionData.componentTree = componentTree;
@@ -160,16 +169,31 @@ export const useComponentTree = () => {
 
 export const useTimelineLog = () => {
     const uiAgent = useContext(UIAgentContext);
-    const [timelineLogs, setTimelineLogs] = useState([] as LogInfo[]);
+    const [timelineLogs, setTimelineLogs] = useState([] as TimelineEvent<any>[]);
     const clearTimelineLogs = useCallback(() => {
         setTimelineLogs([]);
     }, [timelineLogs]);
     const startProfile = useCallback(() => {
-        return uiAgent.subscribe(EVENTS.TIMELINE.EVENT, (args) => {
-            const logInfo = args[0] as LogInfo;
-            setTimelineLogs(timelineLogs => [...timelineLogs, {...logInfo}]);
+        const destroy =  uiAgent.subscribe(EVENTS.TIMELINE.EVENT, (args) => {
+            const logInfo = args[0] as TimelineEvent<any>;
+            setTimelineLogs(timelineLogs => {
+                const newVal = [...timelineLogs];
+                const i = newVal.findIndex(v => {
+                    return v.startTime > logInfo.startTime;
+                });
+                if (i < 0) {
+                    newVal.push(logInfo);
+                } else {
+                    newVal.splice(i, 0, logInfo);
+                }
+                return newVal;
+            });
         });
+        return destroy;
     }, [uiAgent]);
+    useEffect(() => {
+        return startProfile();
+    }, [])
     useEffect(() => {
         setTimelineLogs(uiAgent.sessionData.timelineLogs || []);
     }, [uiAgent.sessionData]);

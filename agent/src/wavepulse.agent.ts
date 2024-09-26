@@ -11,6 +11,12 @@ let wavePulseAgent: Agent = new (class WavePulseAgent extends Agent {
         return this.isConnected;
     }
 
+    connect(debugServerUrl: string) {
+        this.setChannel(WebSocketChannel.connect({
+            'url': debugServerUrl || ''
+        }));
+    }
+
 })();
 let currentPage = null as any;
 type Handler = {
@@ -96,7 +102,7 @@ function listenVariableEvents() {
             name: 'VARIABLE_INVOKE',
             data: {
                 name: v.name,
-                context: v._context === handler ? 'App' : v._context.pageName
+                context: v.config._context === handler ? 'App' : v.config._context.pageName
             },
             startTime: v.__diagnostics.invocationStartTime,
             endTime: v.__diagnostics.invocationEndTime
@@ -122,12 +128,36 @@ function listenServiceCalls() {
         // Do something with response data
         response.config.__endTime = Date.now();
         wavePulseAgent && wavePulseAgent.notify(EVENTS.SERVICE.AFTER_CALL, 'event', [response.config, response]);
+        if (!response.config.__wmVariable) {
+            const config = response.config;
+            wavePulseAgent && wavePulseAgent.notify(EVENTS.TIMELINE.EVENT, 'event', [{
+                name: 'NETWORK_REQUEST',
+                data: {
+                    url: config.url,
+                    method: config.method
+                },
+                startTime: config.__startTime,
+                endTime: config.__endTime
+            }]);
+        }
         return response;
     }, function (error: any) {
         // Any status codes that falls outside the range of 2xx cause this function to trigger
         // Do something with response error
         error.config.__endTime = Date.now();
         wavePulseAgent && wavePulseAgent.notify(EVENTS.SERVICE.AFTER_CALL, 'event', [error.config, error]);
+        if (!error.config.__wmVariable) {
+            const config = error.config;
+            wavePulseAgent && wavePulseAgent.notify(EVENTS.TIMELINE.EVENT, 'event', [{
+                name: 'NETWORK_REQUEST',
+                data: {
+                    url: config.url,
+                    method: config.method
+                },
+                startTime: config.__startTime,
+                endTime: config.__endTime
+            }]);
+        }
         return Promise.reject(error);
     });
 }
@@ -255,35 +285,22 @@ wrapConsole();
 listenServiceCalls();
 
 export const createWavePulseAgent = (args: {
-    debugServerUrl?: string, 
     handler: Handler,
     agent?: Agent}) => {
     handler = args.handler;
     if (args.agent) {
         wavePulseAgent = args.agent
     } else {
-        wavePulseAgent.setChannel(WebSocketChannel.connect({
-            'url': args.debugServerUrl || ''
-        }));
-        wavePulseAgent = wavePulseAgent;
-        wavePulseAgent && wavePulseAgent.notify(EVENTS.TIMELINE.EVENT, 'event', [{
-            name: 'APP_STARTUP',
-            startTime: (handler as any).appConfig.diagnostics.appStartTime,
-            endTime: (handler as any).appConfig.diagnostics.appReadyTime
-        }]);
-        /*wavePulseAgent && wavePulseAgent.notify(EVENTS.TIMELINE.EVENT, 'event', [{
-            name: 'PAGE_READY',
-            data: {
-                name: currentPage.pageName
-            },
-            startTime: (handler as any).appConfig.diagnostics.pageStartTime,
-            endTime: (handler as any).appConfig.diagnostics.pageReadyTime
-        }]);*/
+        handler.subscribe('appReady', (p: any) => {    
+            wavePulseAgent && wavePulseAgent.notify(EVENTS.TIMELINE.EVENT, 'event', [{
+                name: 'APP_STARTUP',
+                startTime: (handler as any).appConfig.diagnostics.appStartTime,
+                endTime: (handler as any).appConfig.diagnostics.appReadyTime
+            }]);
+        });
     }
-    if (handler) {
-        listenPageEvents();
-        listenVariableEvents();
-    }
+    listenPageEvents();
+    listenVariableEvents();
     bindCalls();
     return wavePulseAgent;
 };

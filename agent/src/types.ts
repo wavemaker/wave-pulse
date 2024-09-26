@@ -43,11 +43,12 @@ export type WidgetNode = {
     name: string,
     tagName: string,
     id: string,
-    children: WidgetNode[]
+    children: WidgetNode[],
+    selected?: boolean
 };
 
 export type TimelineEvent<T> = {
-    name: 'APP_STARTUP' | 'VARIABLE_INVOKE' | 'PAGE_READY';
+    name: 'APP_STARTUP' | 'VARIABLE_INVOKE' | 'PAGE_READY' | 'NETWORK_REQUEST';
     data: T;
     info?: {
         title: string,

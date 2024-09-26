@@ -87,8 +87,12 @@ export class UIAgent extends Agent {
 
     saveSessionData(name: string) {
         const form = new FormData();
+        const dataToSave = {
+            // timelineLogs : this.currentSessionData.timelineLogs
+            ...this.currentSessionData
+        };
         form.append('name', name);
-        form.append('content', JSON.stringify(this.currentSessionData));
+        form.append('content', JSON.stringify(dataToSave));
         return axios.post(`${this.httpurl}/session/data`,form,  {
             headers: {
                 'Content-Type': 'multipart/form'

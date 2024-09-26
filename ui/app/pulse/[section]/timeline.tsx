@@ -1,11 +1,12 @@
 import React from "react";
 import { KeyValuePair, KeyValueProps } from "@/components/key-pair";
 import { Accordion, AccordionItem, Button, Tab, Table, Tabs, Tooltip } from "@nextui-org/react";
-import { CloseIcon } from "@nextui-org/shared-icons";
+import { CloseIcon, DeleteIcon } from "@nextui-org/shared-icons";
 import { NetworkRequest, TimelineEvent } from "@wavemaker/wavepulse-agent/src/types";
 import { useEffect, useState } from "react";
 import {Search} from '@/components/search'
 import {DropdownComponent} from '@/components/dropdown'
+import { useTimelineLog } from "@/hooks/hooks";
 // import React from 'react';
 // import { endOfToday, set } from 'date-fns';
 //import TimeRange, { TimeRangeProps, OnChangeCallback, OnUpdateCallback } from 'react-timeline-range-slider';
@@ -20,7 +21,8 @@ const logColors = {
 } as any;
 
 export type Props = {
-    events: TimelineEvent<any>[]
+    timelineLogs: TimelineEvent<any>[],
+    clearTimelineLogs: Function
 };
 
 const getEventInfo = (e: TimelineEvent<any>): {
@@ -32,16 +34,17 @@ const getEventInfo = (e: TimelineEvent<any>): {
         case 'APP_STARTUP': 
             return {title: 'App Startup', 'desc': 'Time taken to App Startup'};
         case 'VARIABLE_INVOKE': 
-            return {title: data.name, 'desc': `invoked from ${data.context}`}
+            return {title: data.name, 'desc': `invoked from ${data.context}`};
         case 'PAGE_READY': 
-            return {title: data.name, 'desc': 'Time taken for Page Startup'}
-
+            return {title: `${data.name} Startup`, 'desc': 'Time taken for Page Startup'};
+        case 'NETWORK_REQUEST':
+            return {title: data.url.split('?')[0].split('/').pop(), 'desc': `Request to ${data.url}.`};
     }
 };
 
-export const TimeLine = (props: Props) => {
-    const startTime = (props.events[0]?.startTime || 0);
-    const endTime = (props.events[props.events.length - 1]?.endTime) || 0;
+export const TimeLine = ({timelineLogs, clearTimelineLogs}: Props) => {
+    const startTime = (timelineLogs[0]?.startTime || 0);
+    const endTime = (timelineLogs[timelineLogs.length - 1]?.endTime) || 0;
     const totalTime = endTime - startTime;
     return (
         <div className="w-full h-full flex flex-row relative">
@@ -54,6 +57,13 @@ export const TimeLine = (props: Props) => {
                 </div>
 
                 <div className="flex flex-1 flex-wrap flex-row content-center justify-end">
+                <Button
+                    isIconOnly
+                    className="bg-transparent w-8 h-6 float-right"
+                    onClick={() => clearTimelineLogs()}
+                >
+                    <DeleteIcon></DeleteIcon>
+                </Button>
                 </div>
             </div>
             {
@@ -68,7 +78,7 @@ export const TimeLine = (props: Props) => {
               
             {
                 
-                props.events.map((e, i) => {
+                timelineLogs.map((e, i) => {
                     const mx = Math.round((e.startTime - startTime) / totalTime * 100);
                     const w = Math.round((e.endTime - e.startTime) / totalTime * 100);
                     e.info = e.info || getEventInfo(e);

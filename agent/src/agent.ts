@@ -117,6 +117,9 @@ export class Agent {
                 name: event,
                 data: args
             });
+            if (this.buffer.length > 400) {
+                this.buffer.splice(0, 1);
+            }
             this.processBuffer();
         } else {
             this.channel?.send({

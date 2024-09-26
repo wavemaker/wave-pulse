@@ -12,7 +12,7 @@ import { SaveDataIcon, SolarSettingsBoldIcon } from "@/components/icons";
 import { Settings } from "./settings";
 import { SaveDataDialog } from "./savedata";
 import { ElementTree } from "./element-tree";
-import { WidgetNode } from "@/.yalc/@wavemaker/wavepulse-agent/types";
+import { WidgetNode } from "@wavemaker/wavepulse-agent/src/types";
 import {BreadcrumbsComponent} from "@/components/breadcrumbs";
 import { TimeLine } from "./timeline";
 
@@ -23,7 +23,7 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
   const appInfo = useAppInfo();
   const platformInfo = usePlatformInfo();
   const {requests, clearRequests} = useNetworkRequests();
-  const {timelineLogs} = useTimelineLog();
+  const {timelineLogs, clearTimelineLogs} = useTimelineLog();
   const entries = useStorageEntries();
   const {logs, clearLogs} = useConsole();
   const {componentTree, refreshComponentTree, highlight} = useComponentTree();
@@ -66,7 +66,7 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
           </Tab>
           <Tab key="elements" title="Elements">
             <div className="h-full ">
-              <ElementTree root={componentTree} isSelected={(n) => {
+              <ElementTree root={componentTree} refreshComponentTree={refreshComponentTree} isSelected={(n) => {
                 return selectedWidget && n.id === selectedWidget.id}}  onSelect={(n,path) => {
                   setBreadcrumbData([...(path || []), n]);
                 highlight(n.id);
@@ -84,7 +84,7 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
             <Network requests={requests}></Network>
           </Tab>
           <Tab key="timeline" title="Timeline">
-            <TimeLine events={timelineLogs}></TimeLine>
+            <TimeLine timelineLogs={timelineLogs} clearTimelineLogs={clearTimelineLogs}></TimeLine>
           </Tab>
           <Tab key="performance" title="Performance">
             Performance is under construction.
