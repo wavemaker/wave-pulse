@@ -1,6 +1,6 @@
 "use client";
 
-import { UIAgentContext, useAppInfo, useComponentTree, useConsole, useNetworkRequests, usePlatformInfo, useStorageEntries } from "@/hooks/hooks";
+import { UIAgentContext, useAppInfo, useComponentTree, useConsole, useNetworkRequests, usePlatformInfo, useStorageEntries, useTimelineLog } from "@/hooks/hooks";
 import { Tabs, Tab, Card, CardBody, Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useContext, useState, useEffect , useMemo, useCallback} from "react";
@@ -14,7 +14,7 @@ import { SaveDataDialog } from "./savedata";
 import { ElementTree } from "./element-tree";
 import { WidgetNode } from "@/.yalc/@wavemaker/wavepulse-agent/types";
 import {BreadcrumbsComponent} from "@/components/breadcrumbs";
-
+import { TimeLine } from "./timeline";
 
 export default function PulsePage({ params }: { params: { section: string } } ) {
 
@@ -23,6 +23,7 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
   const appInfo = useAppInfo();
   const platformInfo = usePlatformInfo();
   const {requests, clearRequests} = useNetworkRequests();
+  const {timelineLogs} = useTimelineLog();
   const entries = useStorageEntries();
   const {logs, clearLogs} = useConsole();
   const {componentTree, refreshComponentTree, highlight} = useComponentTree();
@@ -81,6 +82,9 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
           </Tab>
           <Tab key="network" title="Network">
             <Network requests={requests}></Network>
+          </Tab>
+          <Tab key="timeline" title="Timeline">
+            <TimeLine events={timelineLogs}></TimeLine>
           </Tab>
           <Tab key="performance" title="Performance">
             Performance is under construction.
