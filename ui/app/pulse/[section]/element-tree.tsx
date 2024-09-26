@@ -1,14 +1,16 @@
 import { IconBxsDownArrow, IconBxsLeftArrow } from "@/components/icons";
-import { UIAgentContext } from "@/hooks/hooks";
 import { Accordion, AccordionItem, Select, SelectItem, Tab, Tabs } from "@nextui-org/react";
 import { CALLS } from "@wavemaker/wavepulse-agent/src/constants";
 import { WidgetNode } from "@wavemaker/wavepulse-agent/src/types";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { UIAgentContext, useAppInfo, useComponentTree, useConsole, useNetworkRequests, usePlatformInfo, useStorageEntries } from "@/hooks/hooks";
 
 export type Props = {
     root: WidgetNode,
+    isSelected?: (n : WidgetNode) => boolean,
     depth?: number,
-    onSelect?: (node: WidgetNode) => void,
+    path?: WidgetNode[],
+    onSelect?: (node: WidgetNode,path?:WidgetNode[]) => void,
     onHover?: (node: WidgetNode) => void,
     isRoot?: boolean;
 };
@@ -23,13 +25,22 @@ export const ComponentNode = (props: Props) => {
         setCollapse(e.children?.length > 0 && !collapse);
     }, [e, collapse]);
     const onSelect = useCallback(() => {
-        props.onSelect && props.onSelect(e);
+        props.onSelect && props.onSelect(e,props.path);
         setSelected(!selected);
-    }, [e, props.onSelect, selected, setSelected]);
+    }, [e, props.path,props.onSelect, selected, setSelected]);
     const onHover = useCallback((event: any) => {
         event.stopPropagation();
         props.onHover && props.onHover(e);
     }, [e]);
+    useEffect(() => {
+        const isSelected = !!(props.isSelected && props.isSelected(e));
+        setSelected((oldValue) => {
+            if (!oldValue && isSelected) {
+                onSelect();
+            }
+            return isSelected
+        });
+    }, [!!props.isSelected && props.isSelected(e), onSelect])
     useEffect(() => {
         if (selected) {
             lastSelectedComponent && lastSelectedComponent();
@@ -43,16 +54,19 @@ export const ComponentNode = (props: Props) => {
             e?.id && props.isRoot && onSelect();
         }, 100);
     }, [e && e.id && props.isRoot]);
-    useEffect(() => {
-        e.selected = selected;
-    }, [e, selected, setSelected]);
+    // useEffect(() => {
+    //     e.selected = selected;
+    // }, [e, selected, setSelected]);
     const depth = props.depth || 0;
     const hasChildren = e.children && e.children.length > 0;
     return e ? (
-        <div key={e.id + '' + (!!e.selected)} className="text-xs">
-            <div className={
+
+        <div key={e.id + '' + (!!e.selected)} className="text-xs flex flex-col">
+            <div 
+            className={
                     "text-sky-800 cursor-pointer hover:bg-slate-200 flex flex-row align-middle " +
-                    (selected ? 'bg-slate-300 hover:bg-slate-300': null)}
+                    (selected ? 'bg-slate-300 hover:bg-slate-300': null)
+                }
                 style={{paddingLeft: depth + 'px'}} 
                 onClick={onSelect}
                 onMouseOver={onHover}>
@@ -79,7 +93,13 @@ export const ComponentNode = (props: Props) => {
                         <>
                             {
                                 e.children?.map((c) => (
-                                    <ComponentNode root={c} key={c.name} depth={depth + 16} onSelect={props.onSelect}  onHover={props.onHover}></ComponentNode>
+                                   
+                                    <ComponentNode root={c} 
+                                        path={[...(props.path || []),e]} 
+                                        isSelected={props.isSelected} 
+                                        key={c.name} depth={depth + 16} 
+                                        onSelect={props.onSelect}  
+                                        onHover={props.onHover} ></ComponentNode>
                                 ))
                             }
                         </>
@@ -87,6 +107,7 @@ export const ComponentNode = (props: Props) => {
                     <div className="text-sky-800 cursor-pointer hover:bg-slate-200" style={{paddingLeft: depth + 'px'}} >{`</${e.tagName}>`}</div>
                 </>) : null}
         </div>
+    
     ): null;
 };
 
@@ -95,8 +116,8 @@ export const ElementTree = (props: Props) => {
     const [styles, setStyles] = useState({} as any);
     const [properties, setProperties] = useState([] as any);
     const [selectedPart, setSelectedPart] = useState('root');
-    const onSelect = useCallback((n: WidgetNode) => {
-        props.onSelect && props.onSelect(n);
+    const onSelect = useCallback((n: WidgetNode,path:any) => {
+        props.onSelect && props.onSelect(n,path);
         uiAgent.invoke(CALLS.WIDGET.GET_PROPERTIES_N_STYLES, [n.id]).then((data) => {
             setStyles(data.styles);
             setProperties(Object.keys(data.properties|| {}).sort().map(k => [k, data.properties[k]]));
@@ -107,10 +128,20 @@ export const ElementTree = (props: Props) => {
         props.onHover && props.onHover(n);
     }, [props.onHover]);
     return (
-        <div className="flex flex-row h-full">
-            <div className="flex-1 h-full overflow-auto p-2">
-                <ComponentNode root={props.root} depth={0} onSelect={onSelect} onHover={onHover} isRoot={true}></ComponentNode>
-            </div>
+        <div className="flex flex-row h-full bottom-8">
+           
+                <div className="flex-1 h-full overflow-auto p-2">
+                    <ComponentNode 
+                        root={props.root} 
+                        isSelected={props.isSelected} 
+                        path={[]} 
+                        depth={0} 
+                        onSelect={onSelect} 
+                        onHover={onHover}
+                        isRoot={true}></ComponentNode>
+                </div>
+        
+                    
             <div className="h-full bg-zinc-100" style={{width: 400}}>
                 <Tabs aria-label="Options" radius="none" variant="underlined" classNames={{
                     base: 'w-full flex',
@@ -186,3 +217,5 @@ export const ElementTree = (props: Props) => {
         </div>
     );
 };
+
+

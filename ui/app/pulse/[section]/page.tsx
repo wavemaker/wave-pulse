@@ -3,7 +3,7 @@
 import { UIAgentContext, useAppInfo, useComponentTree, useConsole, useNetworkRequests, usePlatformInfo, useStorageEntries } from "@/hooks/hooks";
 import { Tabs, Tab, Card, CardBody, Button } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
-import { useContext, useState, useEffect } from "react";
+import { useContext, useState, useEffect , useMemo, useCallback} from "react";
 import { Info } from "./info";
 import { Network } from "./network";
 import { Console } from "./console";
@@ -12,6 +12,9 @@ import { SaveDataIcon, SolarSettingsBoldIcon } from "@/components/icons";
 import { Settings } from "./settings";
 import { SaveDataDialog } from "./savedata";
 import { ElementTree } from "./element-tree";
+import { WidgetNode } from "@/.yalc/@wavemaker/wavepulse-agent/types";
+import {BreadcrumbsComponent} from "@/components/breadcrumbs";
+
 
 export default function PulsePage({ params }: { params: { section: string } } ) {
 
@@ -27,6 +30,10 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
   const [isSaveDataOpened, setIsSaveDataOpen] = useState(false);
   const [selected, setSelected] = useState(params.section);
   const [isConnected, setIsConnected] = useState(false);
+  const [selectedWidget, setSelectedWidget] = useState<WidgetNode>(null as any);
+  const [breadcrumbData, setBreadcrumbData]=useState<WidgetNode[]>();    //should get props.path into this page
+
+
   useEffect(() => {
     uiAgent.onConnect(() => {
       setIsConnected(uiAgent.isConnected);
@@ -38,6 +45,10 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
   useEffect(() => {
     history.pushState(null, null as any, `./${selected}`);
   }, [selected]);
+  const onselectBreadCrumbCallback = useCallback((props:any) => {
+   setSelectedWidget(props);
+  },[])
+  // console.log('element trees length', typeof(componentTree));
   return (
     <div className="w-full h-full flex flex-col">
       {isConnected ? 
@@ -54,11 +65,18 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
           </Tab>
           <Tab key="elements" title="Elements">
             <div className="h-full ">
-              <ElementTree root={componentTree} onSelect={(n) => {
+              <ElementTree root={componentTree} isSelected={(n) => {
+                return selectedWidget && n.id === selectedWidget.id}}  onSelect={(n,path) => {
+                  setBreadcrumbData([...(path || []), n]);
                 highlight(n.id);
               }} onHover={(n) => {
                 highlight(n.id);
-              }}></ElementTree>  
+              }}
+              ></ElementTree>  
+            </div>
+            <div  className={
+                    "text-sky-800 cursor-pointer bg-slate-200 w-full fixed bottom-7"
+                    }>{ <BreadcrumbsComponent data={breadcrumbData} onselectBreadCrumbCallback={onselectBreadCrumbCallback}/> }
             </div>
           </Tab>
           <Tab key="network" title="Network">
