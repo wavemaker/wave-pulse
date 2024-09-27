@@ -17,7 +17,9 @@ export class UIAgent extends Agent {
 
     constructor(private wsurl: string,
         private httpurl: string,
-        sessionDataKey = localStorage.getItem(WAVEPULSE_SESSION_DATA)) {
+        private localStorage: Storage,
+        sessionDataKey?: string) {
+        sessionDataKey = sessionDataKey || localStorage.getItem(WAVEPULSE_SESSION_DATA) || '';
         super(sessionDataKey ? {
             send: () => {},
             setListener: () => {}
@@ -48,9 +50,9 @@ export class UIAgent extends Agent {
 
     set sessionDataKey(k: string) {
         if (k) {
-            localStorage.setItem(WAVEPULSE_SESSION_DATA, k);
+            this.localStorage.setItem(WAVEPULSE_SESSION_DATA, k);
         } else {
-            localStorage.removeItem(WAVEPULSE_SESSION_DATA);
+            this.localStorage.removeItem(WAVEPULSE_SESSION_DATA);
         }
         if (this.sessionDataKey !== k) {
             setTimeout(() => location.reload(), 100);
@@ -93,7 +95,7 @@ export class UIAgent extends Agent {
         };
         form.append('name', name);
         form.append('content', JSON.stringify(dataToSave));
-        return axios.post(`${this.httpurl}/session/data`,form,  {
+        return axios.post(`${this.httpurl}/api/session/data`,form,  {
             headers: {
                 'Content-Type': 'multipart/form'
             }
@@ -101,11 +103,11 @@ export class UIAgent extends Agent {
     }
 
     getSessionData(id: string) {
-        return axios.get(`${this.httpurl}/session/data/${id}`)
+        return axios.get(`${this.httpurl}/api/session/data/${id}`)
             .then((res) => (res.data || {}));
     }
 
     listSessionData() {
-        return axios.get(`${this.httpurl}/session/data/list`).then(res => res.data);
+        return axios.get(`${this.httpurl}/api/session/data/list`).then(res => res.data);
     }
 }

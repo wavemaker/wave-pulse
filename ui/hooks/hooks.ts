@@ -6,6 +6,22 @@ import { createContext, useCallback, useContext, useEffect, useState } from "rea
 
 export const UIAgentContext = createContext<UIAgent>(null as any);
 
+export const useLocation = () => {
+    const [location, setLocation] = useState(null as any);
+    useEffect(() => {
+        setLocation(window && window.location);
+    }, []);
+    return location;
+};
+
+export const useLocalStorage = () => {
+    const [localStorage, setLocalStorage] = useState(null as any);
+    useEffect(() => {
+        setLocalStorage(window && window.localStorage);
+    }, []);
+    return localStorage;
+};
+
 export const useConsole = () => {
     const uiAgent = useContext(UIAgentContext);
     const [logs, setLogs] = useState([] as LogInfo[]);

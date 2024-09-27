@@ -13,7 +13,7 @@ export const Search = ({onSearchChange,searchTermVal}:any) =>{
         }}
         variant="bordered"
         placeholder="Type to search..."
-        startContent={<SearchIcon size={18} />}
+        startContent={<SearchIcon scale={16} />}
         type="search"
         value={searchTermVal}               
         onValueChange={(value) => {
