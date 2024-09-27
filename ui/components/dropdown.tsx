@@ -9,7 +9,6 @@ import {
 
 
   export const DropdownComponent = ({allOptions,itemonPressCallback,onSelectionChangecallBack, selectedKeys,selectedValue}:any) => {
-    console.log('inside of dropdown');
     return (<Dropdown>
         <DropdownTrigger>
           <Button variant="light" className="capitalize text-xs h-6" >

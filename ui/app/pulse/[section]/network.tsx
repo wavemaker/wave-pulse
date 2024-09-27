@@ -11,7 +11,8 @@ const logColors = {
     get: 'text-green-600 bg-green-200  border-green-600',
     put: 'text-orange-600 bg-orange-200  border-orange-600',
     post: 'text-orange-600 bg-orange-200  border-orange-600',
-    delete: 'text-red-600 bg-red-200  border-red-600'
+    delete: 'text-red-600 bg-red-200  border-red-600',
+    // 'N' : 'text-blue-600 bg-blue-200  border-blue-600'
 } as any;
 
 export type Props = {
@@ -242,7 +243,7 @@ export const Network = (props: Props) => {
                             <div className="flex-shrink-0 px-8 text-xs w-1/12">{r.status}</div>
                             <div className="flex-shrink-0 px-8 text-xs w-1/12">{r.time}</div>
                             <div className="px-8 text-xs w-7/12">
-                                <div className="h-4 bg-violet-900 text-center text-white" style={{
+                                <div className={"h-4 text-center border  " + (logColors[r.method] || '')} style={{
                                     marginLeft: mx + '%',
                                     width: w ? w + '%' : '2px'
                                 }}></div>

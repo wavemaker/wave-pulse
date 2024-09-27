@@ -1,23 +1,14 @@
 import React from "react";
-import { KeyValuePair, KeyValueProps } from "@/components/key-pair";
-import { Accordion, AccordionItem, Button, Tab, Table, Tabs, Tooltip } from "@nextui-org/react";
-import { CloseIcon, DeleteIcon } from "@nextui-org/shared-icons";
-import { NetworkRequest, TimelineEvent } from "@wavemaker/wavepulse-agent/src/types";
-import { useEffect, useState } from "react";
-import {Search} from '@/components/search'
-import {DropdownComponent} from '@/components/dropdown'
-import { useTimelineLog } from "@/hooks/hooks";
-// import React from 'react';
-// import { endOfToday, set } from 'date-fns';
-//import TimeRange, { TimeRangeProps, OnChangeCallback, OnUpdateCallback } from 'react-timeline-range-slider';
+import {  Button,Tooltip } from "@nextui-org/react";
+import {  DeleteIcon } from "@nextui-org/shared-icons";
+import {  TimelineEvent } from "@wavemaker/wavepulse-agent/src/types";
 
-// import { endOfToday, set } from 'date-fns' 
 
 const logColors = {
-    get: 'text-green-600 bg-green-200  border-green-600',
-    put: 'text-orange-600 bg-orange-200  border-orange-600',
-    post: 'text-orange-600 bg-orange-200  border-orange-600',
-    delete: 'text-red-600 bg-red-200  border-red-600'
+    'A': 'text-green-600 bg-green-200  border-green-600',
+    'V': 'text-orange-600 bg-orange-200  border-orange-600',
+    'P': 'text-red-600 bg-red-200  border-red-600',
+    'N' : 'text-blue-600 bg-blue-200  border-blue-600'
 } as any;
 
 export type Props = {
@@ -46,10 +37,10 @@ export const TimeLine = ({timelineLogs, clearTimelineLogs}: Props) => {
     const startTime = (timelineLogs[0]?.startTime || 0);
     const endTime = (timelineLogs[timelineLogs.length - 1]?.endTime) || 0;
     const totalTime = endTime - startTime;
+  
     return (
         <div className="w-full h-full flex flex-row relative">
             <div className="flex-1 overflow-x-hidden h-full overflow-y-auto ">
-               
     
                 <div className=" bg-zinc-100 px-4 py-1 flex flex-row content-center sticky top-0 w-full ">
         
@@ -82,21 +73,23 @@ export const TimeLine = ({timelineLogs, clearTimelineLogs}: Props) => {
                     const mx = Math.round((e.startTime - startTime) / totalTime * 100);
                     const w = Math.round((e.endTime - e.startTime) / totalTime * 100);
                     e.info = e.info || getEventInfo(e);
+                    console.log('e',e);
                     return (
                         <div key={`${e.name}-${e.startTime}`} 
                             className={
                                 "flex flex-row w-svw border border-x-0 border-t-0 px-4 py-1 cursor-pointer hover:bg-zinc-50 "
                             }>
-                                <Tooltip content={e.info.desc}>
-                                    
-                            <div className="flex-shrink-0 text-xs text-color w-2/12">{e.info.title}</div>
-                                </Tooltip>
-                            {/* <div className={"flex-shrink-0 px-0 text-xs w-1/12 text-center border rounded-lg " + (logColors[r.method] || '')}>
-                            <span>{r.method.toUpperCase()}</span></div> */}
-                            {/* <div className="flex-shrink-0 px-8 text-xs w-1/12">{r.status}</div> */}
-                            <div className="flex-shrink-0 px-8 text-xs w-1/12">{e.endTime - e.startTime}</div>
+                            <Tooltip content={e.info.desc}>
+                                <div className="flex flex-row w-2/12 items-center"> 
+                                    <div className={" text-xs text-color w-4 h-4 justify-center items-center  p-1 text-center border rounded-full flex " + logColors[e.name[0].toUpperCase()]}>
+                                        {e.name[0]}
+                                    </div>      
+                                    <div className={" flex text-xs text-color items-center pl-2" } >{e.info.title}</div>
+                                </div>
+                            </Tooltip>
+                            <div className="flex-shrink-0 px-8 text-xs ">{e.endTime - e.startTime}</div>
                             <div className="px-8 text-xs w-7/12">
-                                <div className="h-4 bg-violet-900 text-center text-white" style={{
+                                <div className={"h-4 text-center border text-white " + logColors[e.name[0].toUpperCase()]} style={{
                                     marginLeft: mx + '%',
                                     width: w ? w + '%' : '2px'
                                 }}></div>

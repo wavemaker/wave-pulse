@@ -3,7 +3,6 @@ import {Input} from "@nextui-org/react";
 import { SearchIcon } from "@nextui-org/shared-icons";
 
 export const Search = ({onSearchChange,searchTermVal}:any) =>{
-    console.log('search component');
     return ( <Input
         classNames={{
           base: "max-w-full sm:max-w-[20rem] h-6 justify-center ",
