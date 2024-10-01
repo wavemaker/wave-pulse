@@ -202,6 +202,29 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
                 <pre className="text-black text-sm">{`wm.App.tryToconnectWavepulse('${location.origin}');`}</pre>
               </div>) : null
             }
+          <div className="flex flex-1 flex-col justify-center content-center items-center flex-wrap">
+            <div className="lds-ripple"><div></div><div></div></div>
+            <div className="p-2 text-sm" style={{width: 400}}>
+              <div className="text-sm text-gray-400 ">{"1) Enter the Application Id below. Application Id is available in Export React Zip dialog in Studio."}</div>
+            </div>
+            <div className="p-2" style={{width: 400}}>
+              <Input type="text" defaultValue={appId} className="w-full" placeholder="Ex: com.application.id" onChange={(event) => setAppId(event.target.value)}/>
+            </div>
+            <div className="p-2 text-sm" style={{width: 400}}>
+              <div className="text-sm text-gray-400">{"2) Using your phone, scan the below QR code, which contains url."}</div>
+            </div>
+            <div className="p-2">
+              <QRCode value={url || ''}/>
+            </div>
+            <div className="p-2">
+              <a className="text-sm break-all w-full underline text-center" href={url}>Copy this link</a>
+            </div>
+            <div className="p-2" style={{width: 400}}>
+              <div className="text-sm text-gray-400">{"3) When the url is opened in phone web browser, App that has the above application id will be opened."}</div>
+            </div>
+            {/* <div className="p-2" style={{width: 400}}>
+              <div className="text-sm">{"4) Message is shown when the app is connected to WavePulse."}</div>
+            </div> */}
           </div>
         )}
       <SaveDataDialog isOpen={isSaveDataOpened} onClose={() => setIsSaveDataOpen(false)}></SaveDataDialog>
