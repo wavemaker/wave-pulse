@@ -66,19 +66,22 @@ export const useAppInfo = () => {
 export const useStorageEntries = () => {
     const uiAgent = useContext(UIAgentContext);
     const [storage, setStorage] = useState({});
-    useEffect(() => {
-        setStorage(uiAgent.sessionData.storage || {});
-    }, [uiAgent.sessionData]);
-    useEffect(() => {
+    const refreshStorage = useCallback(() => {
         uiAgent.invoke(CALLS.STORAGE.GET_ALL, [])
         .then((args: any) => {
             setStorage(args);
         });
+    }, [storage]);
+    useEffect(() => {
+        setStorage(uiAgent.sessionData.storage || {});
+    }, [uiAgent.sessionData]);
+    useEffect(() => {
+        refreshStorage();
     }, []);
     useEffect(() => {
         uiAgent.currentSessionData.storage = storage;
     }, [storage]);
-    return storage;
+    return {storage, refreshStorage};
 };
 
 export const usePlatformInfo = () => {
