@@ -50,7 +50,7 @@ yargs(hideBin(process.argv)).command('post-build',
         yargs.option('ver', {
             describe: 'version number',
             type: 'string',
-            default: '1.0.0-dev-3'
+            default: '1.0.0-dev-5'
         }).option('production', {
             describe: 'to perform a production build',
             type: 'boolean',

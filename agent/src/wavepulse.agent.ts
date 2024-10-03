@@ -179,8 +179,8 @@ function getComponentTree() {
     const activePage = (handler as any).activePage;
     const pageIns: any = Object.values(activePage.Widgets)
         .map((w: any) => w.componentNode)
-        .find((w: any) => w.instance.props.cname === 'WmPage');
-    return buildComponentTree(pageIns);
+        .find((w: any) => w?.instance?.props?.cname === 'WmPage');
+    return pageIns && buildComponentTree(pageIns);
 }
 
 function getComponentById(id: string) {
