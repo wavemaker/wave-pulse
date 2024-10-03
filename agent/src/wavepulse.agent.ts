@@ -36,10 +36,14 @@ function wrapConsole() {
     const _console = console as ConsoleType;
     const prepareLogFn = (logType: string, original: Function) => {
         return function() {
+            let args = [...arguments]
+            if (logType === 'error' && arguments[0].stack) {
+                args.splice(0, 1, arguments[0].stack.toString());
+            }
             wavePulseAgent && wavePulseAgent.notify(EVENTS.CONSOLE.LOG, 'event', [{
                 type: logType, 
                 date: Date.now(), 
-                message: Array.from(arguments)
+                message: Array.from(args)
             }]);
             original.call(_console, ...arguments);
         }
@@ -175,7 +179,7 @@ function getComponentTree() {
     const activePage = (handler as any).activePage;
     const pageIns: any = Object.values(activePage.Widgets)
         .map((w: any) => w.componentNode)
-        .find((w: any) => w.instance.constructor.name === 'WmPage');
+        .find((w: any) => w.instance.props.cname === 'WmPage');
     return buildComponentTree(pageIns);
 }
 
@@ -277,7 +281,13 @@ function bindCalls() {
         };
     });
     wavePulseAgent.onInvoke(CALLS.WIDGET.TREE, (args) => {
-        return Promise.resolve(getComponentTree());
+        let result = null as any;
+        try {
+            result = getComponentTree();
+        } catch(e) {
+            console.error((e as any).stack.toString());
+        }
+        return Promise.resolve(result);
     });
 }
 

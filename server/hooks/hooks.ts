@@ -158,9 +158,9 @@ export const useNetworkRequests = () => {
 
 export const useComponentTree = () => {
     const uiAgent = useContext(UIAgentContext);
-    const [componentTree, setComponentTree] = useState([] as any);
+    const [componentTree, setComponentTree] = useState(null as any);
     useEffect(() => {
-        setComponentTree(uiAgent.sessionData.componentTree || []);
+        setComponentTree(uiAgent.sessionData.componentTree || null);
     }, [uiAgent.sessionData]);
     const highlight = useCallback((widetId: string) => {
         uiAgent.invoke(CALLS.WIDGET.HIGHLIGHT, [widetId]);
