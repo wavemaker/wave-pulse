@@ -168,8 +168,8 @@ function listenServiceCalls() {
 
 function buildComponentTree(componentNode: any) {
     return {
-        tagName: componentNode.instance.constructor.name,
-        name: componentNode.instance.props.cname || componentNode.instance.props.name,
+        tagName: componentNode.instance.props.cname || componentNode.instance.constructor.name,
+        name: componentNode.instance.props.name,
         id: componentNode.id,
         children: componentNode.children.map((c: any) => buildComponentTree(c))
     }
