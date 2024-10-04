@@ -169,23 +169,21 @@ function listenServiceCalls() {
 function buildComponentTree(componentNode: any) {
     return {
         tagName: componentNode.instance.constructor.name,
-        name: componentNode.instance.props.name,
+        name: componentNode.instance.props.cname || componentNode.instance.props.name,
         id: componentNode.id,
         children: componentNode.children.map((c: any) => buildComponentTree(c))
     }
 }
 
 function getComponentTree() {
-    const activePage = (handler as any).activePage;
-    const pageIns: any = Object.values(activePage.Widgets)
+    const pageIns: any = Object.values(currentPage.Widgets)
         .map((w: any) => w.componentNode)
         .find((w: any) => w?.instance?.props?.cname === 'WmPage');
     return pageIns && buildComponentTree(pageIns);
 }
 
 function getComponentById(id: string) {
-    const activePage = (handler as any).activePage;
-    return (Object.values(activePage.Widgets)
+    return (Object.values(currentPage.Widgets)
         .find((w: any) => w.componentNode.id === id) as any);
 }
 

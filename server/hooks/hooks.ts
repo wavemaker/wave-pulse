@@ -40,6 +40,11 @@ export const useConsole = () => {
     }, []);
     useEffect(() => {
         uiAgent.currentSessionData.logs = logs;
+        (window as any).remoteEvaL = (expr: string) => {
+            uiAgent.invoke(CALLS.EXPRESSION.EVAL, [{expr}]).then((data) => {
+                console.log(`Eval: ${expr} => ${JSON.stringify(data)}`);
+            });
+        };
     }, [logs]);
     return {logs, clearLogs};
 };
