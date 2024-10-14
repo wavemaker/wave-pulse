@@ -6,10 +6,32 @@ export async function GET(
     const searchParams = request.nextUrl.searchParams;
     const appId = searchParams.get('appId');
     const expoUrl = searchParams.get('expoUrl');
+    let url = '';
     if (appId) {
-      return Response.redirect(`${appId}://wavepulse/connect?url=${searchParams.get('wavepulseURL')}`);
+      url = `${appId}://wavepulse/connect?url=${searchParams.get('wavepulseURL')}`;
     }
     if (expoUrl) {
-      return Response.redirect(`${expoUrl}/--/wavepulse/connect?url=${searchParams.get('wavepulseURL')}`);
+      url = `${expoUrl}/--/wavepulse/connect?url=${searchParams.get('wavepulseURL')}`;
     }
+    return new Response(`
+      <html>
+        <head>
+          <meta name="viewport" content="width=device-width, user-scalable=no">
+          
+        </head>
+        <body>
+          If you are not automatically redirected to App, please click on the below link.
+          <br>
+          <a href="${url}">${url}</a>
+          <script>
+            window.location.href = "${url}";
+          </script>
+        </body>
+      </html>
+    `, {
+      status: 200,
+      headers: {
+        'Content-Type': 'text/html'
+      }
+    });
 }
