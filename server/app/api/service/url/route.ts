@@ -21,7 +21,16 @@ export async function GET(
     request: NextRequest
   ) {
     const searchParams = request.nextUrl.searchParams;
-    return new Response(`http://${getIpAddress()}:3000/api/connect?appId=${searchParams.get('appId')}&wavepulseURL=http://${getIpAddress()}:3000`, {
-        status: 200
-    });
+    const appId = searchParams.get('appId');
+    const expoUrl = searchParams.get('expoUrl');
+    if (appId) {
+        return new Response(`http://${getIpAddress()}:3000/api/connect?appId=${appId}&wavepulseURL=http://${getIpAddress()}:3000`, {
+            status: 200
+        });
+    }
+    if (expoUrl) {
+        return new Response(`http://${getIpAddress()}:3000/api/connect?expoUrl=${expoUrl}&wavepulseURL=http://${getIpAddress()}:3000`, {
+            status: 200
+        });
+    }
 }

@@ -27,7 +27,11 @@ const connectOptions = {
   webpreview: {
     label: 'Connect to Web Preview',
     description: 'Connect to a WaveMaker React Native web preview.'
-  }
+  },
+  /*expo: {
+    label: 'Connect to Expo Go',
+    description: 'Connect to Expo Go preview.'
+  }*/
 };
 
 export default function PulsePage({ params }: { params: { section: string } } ) {
@@ -50,12 +54,18 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
   //should get props.path into this page
   const [sessionDataArr, setSessionDataArr] = useState([]);
   const [appId, setAppId] = useState(localStorage.getItem('wavepulse.lastopenedapp.id') || 'com.application.id');   //should get props.path into this page
+  const [expoUrl, setExpoUrl] = useState(localStorage.getItem('wavepulse.lastopenedexpo.url') || '');
   const [url, setUrl] = useState('');
   const [selectedConnectOption, setSelectedConnectOption] = useState(['mobile']);
   useEffect(() => {
-    appId && uiAgent.getWavepulseUrl(appId).then(url => setUrl(url));
-    localStorage.setItem('wavepulse.lastopenedapp.id', appId);
-  }, [appId]);
+    if (selectedConnectOption[0] === 'mobile') {
+      appId && uiAgent.getWavepulseUrl({appId}).then(url => setUrl(url));
+      localStorage.setItem('wavepulse.lastopenedapp.id', appId);
+    } else if (selectedConnectOption[0] === 'expo') {
+      expoUrl && uiAgent.getWavepulseUrl({expoUrl}).then(url => setUrl(url));
+      localStorage.setItem('wavepulse.lastopenedexpo.url', expoUrl);
+    }
+  }, [appId, expoUrl, selectedConnectOption[0]]);
 
   useEffect(() => {
     uiAgent.onConnect(() => {
@@ -158,6 +168,9 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
                   <DropdownItem key="mobile" description={connectOptions.mobile.description}>
                     {connectOptions.mobile.label}
                   </DropdownItem>
+                  {/* <DropdownItem key="expo" description={connectOptions.expo.description}>
+                    {connectOptions.expo.label}
+                  </DropdownItem> */}
                   <DropdownItem key="webpreview" description={connectOptions.webpreview.description}>
                     {connectOptions.webpreview.label}
                   </DropdownItem>
@@ -199,7 +212,30 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
                 <div className="p-2 text-sm" style={{width: 400}}>
                   <div className="text-sm text-gray-400">{"2) Execute the below code in the developer console."}</div>
                 </div>
-                <pre className="text-black text-sm">{`wm.App.tryToconnectWavepulse('${location.origin}');`}</pre>
+                <pre className="text-black text-sm">{`wm.App.tryToconnectWavepulse('${((url && url.match(/http(s)?:\/\/[^\/]*/)) || [''])[0]}');`}</pre>
+              </div>) : null
+            }
+            {
+              selectedConnectOption[0] === 'expo' ? (<div style={{minHeight: 600}} 
+                className="flex flex-col content-center items-center flex-wrap">
+                <div className="p-2 text-sm" style={{width: 400}}>
+                  <div className="text-sm text-gray-400 ">{"1) Enter the Expo server url below. Expo server url is found in the tarminal where Expo is running."}</div>
+                </div>
+                <div className="p-2" style={{width: 400}}>
+                  <Input type="text" defaultValue={expoUrl} className="w-full" placeholder="Ex: exp://127.0.0.1:8081" onChange={(event) => setExpoUrl(event.target.value)}/>
+                </div>
+                <div className="p-2 text-sm" style={{width: 400}}>
+                  <div className="text-sm text-gray-400">{"2) Using your phone, scan the below QR code, which contains url."}</div>
+                </div>
+                <div className="p-2">
+                  <QRCode value={url || ''}/>
+                </div>
+                <div className="p-2">
+                  <a className="text-sm break-all w-full underline text-center" href={url}>Copy this link</a>
+                </div>
+                <div className="p-2" style={{width: 400}}>
+                  <div className="text-sm text-gray-400">{"3) When the url is opened in phone web browser, Expo Go is launched."}</div>
+                </div>
               </div>) : null
             }
           </div>

@@ -87,8 +87,13 @@ export class UIAgent extends Agent {
         });
     }
 
-    public getWavepulseUrl(appId: string) {
-        return axios.get(`${this.httpurl}/api/service/url?appId=${appId}`).then(res => res.data);
+    public getWavepulseUrl({appId, expoUrl} : {appId?: string, expoUrl?: string}) {
+        if (appId) {
+            return axios.get(`${this.httpurl}/api/service/url?appId=${appId}`).then(res => res.data);
+        } else if(expoUrl) {
+            return axios.get(`${this.httpurl}/api/service/url?expoUrl=${expoUrl}`).then(res => res.data);
+        }
+        return Promise.resolve('');
     }
 
     saveSessionData(name: string) {
