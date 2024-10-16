@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell} from "@nextui-org/react";
 
-import { AppInfo, PlatformInfo } from "@wavemaker/wavepulse-agent/src/types";
+import { AppInfo, PlatformInfo } from "@/types";
 import { KeyValuePair, KeyValueProps } from "@/components/key-pair";
 
 export type Props = {

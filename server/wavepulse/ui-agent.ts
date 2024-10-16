@@ -1,7 +1,5 @@
 "use client";
-import { Agent } from '@wavemaker/wavepulse-agent/src/agent';
-import { Channel, WebSocketChannel } from '@wavemaker/wavepulse-agent/src/channel';
-import { CALLS } from '@wavemaker/wavepulse-agent/src/constants';
+import { Agent, Channel, WebSocketChannel, CALLS } from '@wavemaker/wavepulse-agent';
 import axios from 'axios';
 import { Subject } from 'rxjs';
 

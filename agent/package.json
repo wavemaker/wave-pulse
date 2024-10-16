@@ -1,6 +1,6 @@
 {
   "name": "@wavemaker/wavepulse-agent",
-  "version": "1.0.3",
+  "version": "1.0.7",
   "description": "Debug Agent that needs to installed in WaveMaker React Native app.",
   "main": "build/index.js",
   "scripts": {

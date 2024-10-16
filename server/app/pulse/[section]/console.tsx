@@ -3,7 +3,7 @@ import { DeleteIcon } from "@nextui-org/shared-icons";
 import {Button} from "@nextui-org/react";
 import {Search} from '@/components/search'
 import {DropdownComponent} from '@/components/dropdown'
-import { LogInfo } from "@wavemaker/wavepulse-agent/src/types";
+import { LogInfo } from "@/types";
 
 const logColors = {
   debug: "text-green-600",

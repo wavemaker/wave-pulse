@@ -29,9 +29,6 @@ async function postBuild(runtimeVersion) {
     });
     packageData.main = 'index';
     packageData.module = 'index';
-    packageData.exports = {
-      "./": "./"
-    };
     packageData.scripts = {}; 
     writeFileSync(`${projectDir}/dist/module/package.json`, JSON.stringify(packageData, null, 2))
     await updatePackageVersion(`${projectDir}/dist/module/package.json`, 'version', runtimeVersion);

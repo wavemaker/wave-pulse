@@ -12,7 +12,7 @@ import { SaveDataIcon, SolarSettingsBoldIcon } from "@/components/icons";
 import { Settings } from "./settings";
 import { SaveDataDialog } from "./savedata";
 import { ElementTree } from "./element-tree";
-import { WidgetNode } from "@wavemaker/wavepulse-agent/src/types";
+import { WidgetNode } from "@/types";
 import {BreadcrumbsComponent} from "@/components/breadcrumbs";
 import { TimeLine } from "./timeline";
 import {Session} from './session';

@@ -2,7 +2,7 @@ import React, { useState, useCallback } from "react";
 import { DeleteIcon } from "@nextui-org/shared-icons";
 import {Button} from "@nextui-org/react";
 import {Search} from '@/components/search';
-import { SessionData } from "@wavemaker/wavepulse-agent/src/types";
+import { SessionData } from "@/types";
 import {IconExport} from '@/components/icons';
 import JSZip from "jszip";
 import { saveAs } from 'file-saver';
@@ -100,7 +100,7 @@ const fileExtractCallBack = async (fileName:any) => {
         return  (
         searchConditionCallback(data) ?
             <div className={"flex flex-row w-svw border border-x-0 border-t-0 px-4 py-1 cursor-pointer hover:bg-zinc-50 "}>
-                <div className="flex-shrink-0 text-xs text-color w-3/12">{data}</div>
+                <div className="flex-shrink-0 text-xs text-color w-3/12">{data as any}</div>
                 <div style={{ alignContent: "center" }} className="flex-shrink-0 text-xs text-color w-1/12 flex items-start">
                     <Button
                         isIconOnly

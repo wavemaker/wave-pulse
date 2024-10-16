@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button} from "@nextui-org/react";
 
-import { AppInfo, PlatformInfo } from "@wavemaker/wavepulse-agent/src/types";
+import { AppInfo, PlatformInfo } from "@/types";
 import { KeyValuePair, KeyValueProps } from "@/components/key-pair";
 import { RefreshIcon } from "@/components/icons";
 
