@@ -58,3 +58,8 @@ export type TimelineEvent<T> = {
     endTime: number;
     timestamp: number;
 };
+
+export type SessionData = {
+    data:string,
+    index:number,
+};
