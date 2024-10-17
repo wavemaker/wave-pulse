@@ -93,6 +93,7 @@ export class UIAgent extends Agent {
     }
 
     exportSessionData(name: string) {
+        name = name + '.wavepulse';
         const form = new FormData();
         form.append('filename', name);
         const entries = [] as any;

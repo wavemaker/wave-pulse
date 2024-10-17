@@ -253,6 +253,7 @@ function PulsePage({ section, refresh }: { section: string, refresh: Function } 
           <div className="flex icontent-center px-2">
               <input
                   type="file"
+                  accept=".zip"
                   onChange={(event)=>handleFileSelect(event)}
                   style={{ display: 'none' }}
                   id="fileInput"
