@@ -8,7 +8,7 @@ import { Info } from "./info";
 import { Network } from "./network";
 import { Console } from "./console";
 import { Storage } from "./storage";
-import { IconImport, SaveDataIcon, SolarSettingsBoldIcon } from "@/components/icons";
+import { IconExport, IconImport } from "@/components/icons";
 import { Settings } from "./settings";
 import { SaveDataDialog } from "./savedata";
 import { ElementTree } from "./element-tree";
@@ -248,7 +248,7 @@ function PulsePage({ section, refresh }: { section: string, refresh: Function } 
             <div className="align-end cursor-pointer mr-4" onClick={() => {
             setIsSaveDataOpen(true);
           }}>
-            <SaveDataIcon color="#666" width={20} height={20}></SaveDataIcon>
+            <IconExport color="#666" width={20} height={20}></IconExport>
           </div>) : null }
           <div className="flex icontent-center px-2">
               <input

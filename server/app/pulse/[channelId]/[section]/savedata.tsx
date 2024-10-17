@@ -33,7 +33,7 @@ export const SaveDataDialog = (props: {
            <ModalContent>
             {(onClose) => (
                 <>
-                <ModalHeader className="flex flex-col gap-1">Save Session Data As</ModalHeader>
+                <ModalHeader className="flex flex-col gap-1">Export Data</ModalHeader>
                 <ModalBody>
                     <div className="py-2 w-12/12">
                         <Input type="text" label="Enter a name" onValueChange={(v) => setName(v)}/>
