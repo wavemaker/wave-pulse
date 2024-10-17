@@ -12,7 +12,7 @@ export const SaveDataDialog = (props: {
     const [name, setName] = useState('');
     const applyFn = useCallback((onClose: Function) => {
         if (name) {
-            uiAgent.saveSessionData(name)
+            uiAgent.exportSessionData(name)
                 .then(() => onClose && onClose());
         }
     }, [name]);

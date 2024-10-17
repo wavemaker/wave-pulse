@@ -26,11 +26,7 @@ export class UIAgent extends Agent {
             url: wsurl,
             channelId: channelId
         }));
-        if (sessionDataKey) {
-            this.getSessionData(sessionDataKey).then(data => {
-                this._sessionData = data;
-            });
-        } else {
+        if (!sessionDataKey) {
             this.checkForWavePulseAgent();
         };
         this._sessionDataKey = sessionDataKey || '';
@@ -96,27 +92,34 @@ export class UIAgent extends Agent {
         return Promise.resolve('');
     }
 
-    saveSessionData(name: string) {
+    exportSessionData(name: string) {
         const form = new FormData();
-        const dataToSave = {
-            // timelineLogs : this.currentSessionData.timelineLogs
-            ...this.currentSessionData
-        };
-        form.append('name', name);
-        form.append('content', JSON.stringify(dataToSave));
-        return axios.post(`${this.httpurl}/api/session/data`,form,  {
+        form.append('filename', name);
+        const entries = [] as any;
+        Object.keys(this.currentSessionData).forEach((k: string) => {
+            form.append(k, JSON.stringify(this.currentSessionData[k]));
+            entries.push(k);
+        });
+        form.append('entries', JSON.stringify(entries));
+        return axios.post(`${this.httpurl}/api/session/data/export`, form,  {
             headers: {
                 'Content-Type': 'multipart/form'
             }
+        }).then(res => {
+            window.location.href = `${this.httpurl}/api/session/data/${res.data.path}?name=${name}.zip`;
         });
     }
 
-    getSessionData(id: string) {
-        return axios.get(`${this.httpurl}/api/session/data/${id}`)
-            .then((res) => (res.data || {}));
-    }
-
-    listSessionData() {
-        return axios.get(`${this.httpurl}/api/session/data/list`).then(res => res.data);
+    importSessionData(file: any) {
+        const formData = new FormData();
+        formData.append("file", file);
+        return axios.post(`${this.httpurl}/api/session/data/import`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form'
+            }
+        }).then((res) => {
+            this._sessionData = {...res.data};
+            this._sessionDataKey = file.name;
+        });
     }
 }

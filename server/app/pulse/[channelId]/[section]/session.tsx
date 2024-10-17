@@ -4,8 +4,6 @@ import {Button} from "@nextui-org/react";
 import {Search} from '@/components/search';
 import { SessionData } from "@/types";
 import {IconExport} from '@/components/icons';
-import JSZip from "jszip";
-import { saveAs } from 'file-saver';
 import axios from 'axios';
 
 
@@ -59,12 +57,6 @@ const fileExtractCallBack = async (fileName:any) => {
     if (response.status !== 200) {
       throw new Error('Failed to fetch file contents');
     }
-    const fileContent = await response.data;
-    var zip = new JSZip();
-    zip.file(`${fileName}`, JSON.stringify(fileContent) );
-    zip.generateAsync({type:"blob"}).then(function(content) {
-        saveAs(content, "example.zip");
-    });
   } catch (error) {
     console.error('Error:', error);
   }

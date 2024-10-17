@@ -8,7 +8,7 @@ import { Info } from "./info";
 import { Network } from "./network";
 import { Console } from "./console";
 import { Storage } from "./storage";
-import { SaveDataIcon, SolarSettingsBoldIcon } from "@/components/icons";
+import { IconImport, SaveDataIcon, SolarSettingsBoldIcon } from "@/components/icons";
 import { Settings } from "./settings";
 import { SaveDataDialog } from "./savedata";
 import { ElementTree } from "./element-tree";
@@ -35,7 +35,7 @@ const connectOptions = {
   }*/
 };
 
-function PulsePage({ section }: { section: string } ) {
+function PulsePage({ section, refresh }: { section: string, refresh: Function } ) {
   const router = useRouter();
   const uiAgent = useContext(UIAgentContext);
   const appInfo = useAppInfo();
@@ -78,18 +78,13 @@ function PulsePage({ section }: { section: string } ) {
   useEffect(() => {
     history.pushState(null, null as any, `./${selected}`);
   }, [selected]);
+  const handleFileSelect = async (e:any) => {
+    const file = e.target.files[0];
+    uiAgent.importSessionData(file).then(() => refresh());
+  };
   const onselectBreadCrumbCallback = useCallback((props:any) => {
    setSelectedWidget(props);
-  },[])
-
-  //here
-  useEffect(() => {
-    uiAgent.listSessionData().then((data) => {
-        setSessionDataArr(data);
-    });
-}, []);
-
-// console.log('sessiondataarray', sessionDataArr);
+  },[]);
   return (
     <div className="w-full h-full flex flex-col">
       {isConnected ? 
@@ -135,9 +130,9 @@ function PulsePage({ section }: { section: string } ) {
           <Tab key="info" title="Info">
             <Info appInfo={appInfo} platformInfo={platformInfo}></Info> 
           </Tab>
-          <Tab key="session" title="Session">
+          {/* <Tab key="session" title="Session">
             <Session sessionData={sessionDataArr}></Session>
-          </Tab>
+          </Tab> */}
         </Tabs>) : 
         null }
         {isConnected ? null : (
@@ -255,11 +250,22 @@ function PulsePage({ section }: { section: string } ) {
           }}>
             <SaveDataIcon color="#666" width={20} height={20}></SaveDataIcon>
           </div>) : null }
-          <div className="align-end cursor-pointer" onClick={() => {
+          <div className="flex icontent-center px-2">
+              <input
+                  type="file"
+                  onChange={(event)=>handleFileSelect(event)}
+                  style={{ display: 'none' }}
+                  id="fileInput"
+              />
+              <label htmlFor="fileInput" className=" cursor-pointer">
+                  <IconImport color="#666" width={20} height={20}/>
+              </label>
+          </div>
+          {/* <div className="align-end cursor-pointer" onClick={() => {
             setIsSettingsOpen(true);
           }}>
             <SolarSettingsBoldIcon color="#666" width={20} height={20}></SolarSettingsBoldIcon>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
@@ -270,6 +276,12 @@ export default ({ params }: { params: { section: string, channelId: string } } )
   const location = useLocation();
   const localStorage = useLocalStorage();
   const [uiAgent, setUIAgent] = useState<UIAgent>(null as any);
+  const [key, setKey] = useState(0);
+  useEffect(() => {
+    if (key % 2) {
+      setTimeout(() => setKey(key + 1), 100);
+    }
+  }, [key]);
   useEffect(() => {
     if (!location || !localStorage) {
       return;
@@ -283,6 +295,6 @@ export default ({ params }: { params: { section: string, channelId: string } } )
   }, [location, localStorage]);
   return uiAgent && 
     (<UIAgentContext.Provider value={uiAgent}>
-      <PulsePage section={params.section}/>
+      <PulsePage section={params.section} key={key} refresh={() => setKey(key + 1)}/>
     </UIAgentContext.Provider>);
 }
