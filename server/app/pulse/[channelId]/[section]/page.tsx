@@ -130,7 +130,7 @@ function PulsePage({ section }: { section: string } ) {
             Performance is under construction.
           </Tab> */}
           <Tab key="storage" title="Storage">
-            <Storage data={storage} refreshStorage={refreshStorage}></Storage>
+            <Storage data={storage} refreshStorage={refreshStorage} active={section === 'storage'}></Storage>
           </Tab>
           <Tab key="info" title="Info">
             <Info appInfo={appInfo} platformInfo={platformInfo}></Info> 
