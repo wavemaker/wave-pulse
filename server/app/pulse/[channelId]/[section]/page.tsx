@@ -1,6 +1,6 @@
 "use client";
 
-import { UIAgentContext, useAppInfo, useComponentTree, useConsole, useNetworkRequests, usePlatformInfo, useStorageEntries, useTimelineLog } from "@/hooks/hooks";
+import { UIAgentContext, useAppInfo, useComponentTree, useConsole, useLocalStorage, useLocation, useNetworkRequests, usePlatformInfo, useStorageEntries, useTimelineLog } from "@/hooks/hooks";
 import { Tabs, Tab, Button, Input, DropdownMenu, DropdownItem, Dropdown, DropdownTrigger, ButtonGroup } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useContext, useState, useEffect , useMemo, useCallback} from "react";
@@ -18,6 +18,7 @@ import { TimeLine } from "./timeline";
 import {Session} from './session';
 import QRCode from "react-qr-code";
 import { ChevronDownIcon } from "@nextui-org/shared-icons";
+import { UIAgent } from "@/wavepulse/ui-agent";
 
 const connectOptions = {
   mobile: {
@@ -34,8 +35,7 @@ const connectOptions = {
   }*/
 };
 
-export default function PulsePage({ params }: { params: { section: string } } ) {
-
+function PulsePage({ section }: { section: string } ) {
   const router = useRouter();
   const uiAgent = useContext(UIAgentContext);
   const appInfo = useAppInfo();
@@ -47,7 +47,7 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
   const {componentTree, refreshComponentTree, highlight} = useComponentTree();
   const [isSettingsOpened, setIsSettingsOpen] = useState(false);
   const [isSaveDataOpened, setIsSaveDataOpen] = useState(false);
-  const [selected, setSelected] = useState(params.section);
+  const [selected, setSelected] = useState(section);
   const [isConnected, setIsConnected] = useState(false);
   const [selectedWidget, setSelectedWidget] = useState<WidgetNode>(null as any);
   const [breadcrumbData, setBreadcrumbData]=useState<WidgetNode[]>();
@@ -264,4 +264,25 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
       </div>
     </div>
   );
+};
+
+export default ({ params }: { params: { section: string, channelId: string } } ) => {
+  const location = useLocation();
+  const localStorage = useLocalStorage();
+  const [uiAgent, setUIAgent] = useState<UIAgent>(null as any);
+  useEffect(() => {
+    if (!location || !localStorage) {
+      return;
+    }const server = location.href.split('/pulse')[0];
+    setUIAgent(new UIAgent(
+      server.replace(/(https\/\/)/, 'wss://')
+        .replace(/(http:\/\/)/, 'ws://'),
+        server,
+        params.channelId,
+        localStorage));
+  }, [location, localStorage]);
+  return uiAgent && 
+    (<UIAgentContext.Provider value={uiAgent}>
+      <PulsePage section={params.section}/>
+    </UIAgentContext.Provider>);
 }

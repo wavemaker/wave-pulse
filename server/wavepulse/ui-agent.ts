@@ -15,14 +15,16 @@ export class UIAgent extends Agent {
 
     constructor(private wsurl: string,
         private httpurl: string,
+        public channelId: string,
         private localStorage: Storage,
-        sessionDataKey?: string) {
+        sessionDataKey?: string,) {
         sessionDataKey = sessionDataKey || localStorage.getItem(WAVEPULSE_SESSION_DATA) || '';
         super(sessionDataKey ? {
             send: () => {},
             setListener: () => {}
         } as Channel: WebSocketChannel.connect({
-            url: wsurl
+            url: wsurl,
+            channelId: channelId
         }));
         if (sessionDataKey) {
             this.getSessionData(sessionDataKey).then(data => {
@@ -30,7 +32,7 @@ export class UIAgent extends Agent {
             });
         } else {
             this.checkForWavePulseAgent();
-        }
+        };
         this._sessionDataKey = sessionDataKey || '';
     }
 
@@ -87,9 +89,9 @@ export class UIAgent extends Agent {
 
     public getWavepulseUrl({appId, expoUrl} : {appId?: string, expoUrl?: string}) {
         if (appId) {
-            return axios.get(`${this.httpurl}/api/service/url?appId=${appId}`).then(res => res.data);
+            return axios.get(`${this.httpurl}/api/service/url?appId=${appId}&channelId=${this.channelId}`).then(res => res.data);
         } else if(expoUrl) {
-            return axios.get(`${this.httpurl}/api/service/url?expoUrl=${expoUrl}`).then(res => res.data);
+            return axios.get(`${this.httpurl}/api/service/url?expoUrl=${expoUrl}&channelId=${this.channelId}`).then(res => res.data);
         }
         return Promise.resolve('');
     }

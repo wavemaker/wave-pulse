@@ -16,20 +16,21 @@ function getIpAddress() {
     };
     return 'localhost';
 }
-
+const BASE_URL = process.env.WAVEPULSE_BASE_URL || `http://${getIpAddress()}:3000`;
 export async function GET(
     request: NextRequest
   ) {
     const searchParams = request.nextUrl.searchParams;
     const appId = searchParams.get('appId');
     const expoUrl = searchParams.get('expoUrl');
+    const channelId = searchParams.get('channelId');
     if (appId) {
-        return new Response(`http://${getIpAddress()}:3000/api/connect?appId=${appId}&wavepulseURL=http://${getIpAddress()}:3000`, {
+        return new Response(`${BASE_URL}/api/connect?channelId=${channelId}&appId=${appId}&wavepulseURL=${BASE_URL}`, {
             status: 200
         });
     }
     if (expoUrl) {
-        return new Response(`http://${getIpAddress()}:3000/api/connect?expoUrl=${expoUrl}&wavepulseURL=http://${getIpAddress()}:3000`, {
+        return new Response(`${BASE_URL}/api/connect?channelId=${channelId}&expoUrl=${expoUrl}&wavepulseURL=${BASE_URL}`, {
             status: 200
         });
     }

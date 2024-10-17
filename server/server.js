@@ -20,8 +20,11 @@ app.prepare().then(() => {
   });
 
   io.on("connection", (socket) => {
+    socket.on('join', function (data) {
+      socket.join(data.channelId);
+    });
     socket.on('message', (message) => {
-        socket.broadcast.emit('message', message);
+        io.to(message.channelId).emit('message', message);
     });
   });
 
