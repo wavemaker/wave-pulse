@@ -24,6 +24,7 @@ export class UIAgent extends Agent {
             setListener: () => {}
         } as Channel: WebSocketChannel.connect({
             url: wsurl,
+            path: '/wavepulse/socket.io',
             channelId: channelId
         }));
         if (!sessionDataKey) {
