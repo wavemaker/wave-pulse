@@ -287,11 +287,11 @@ export default ({ params }: { params: { section: string, channelId: string } } )
     if (!location || !localStorage) {
       return;
     }
-    const server = location.href.split('/wavepulse/client')[0] + '/wavepulse';
+    const server = location.href.split('/wavepulse/client')[0] ;
     setUIAgent(new UIAgent(
       server.replace(/(https\/\/)/, 'wss://')
         .replace(/(http:\/\/)/, 'ws://'),
-        server,
+        server + '/wavepulse',
         params.channelId,
         localStorage));
   }, [location, localStorage]);

@@ -13,6 +13,7 @@ app.prepare().then(() => {
   const httpServer = createServer(handler);
 
   const io = new Server(httpServer, {
+    path: '/wavepulse/socket.io',
     cors: {
       origin: "*",
       methods: ["GET", "POST"]
