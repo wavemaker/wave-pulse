@@ -7,7 +7,7 @@ import { useContext, useEffect, useState } from "react";
 export default function WaitingForConnectionPage() {
     const router = useRouter();
     useEffect(() => {
-        router.push(`/pulse/c${Date.now()}/elements`);
+        router.push(`/client/c${Date.now()}/elements`);
     }, []);
     return (<></>);
 }
