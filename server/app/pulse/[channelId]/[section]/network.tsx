@@ -2,7 +2,7 @@ import React from "react";
 import { KeyValuePair, KeyValueProps } from "@/components/key-pair";
 import { Accordion, AccordionItem, Button, Tab, Table, Tabs } from "@nextui-org/react";
 import { CloseIcon } from "@nextui-org/shared-icons";
-import { NetworkRequest } from "@wavemaker/wavepulse-agent/src/types";
+import { NetworkRequest } from "@/types";
 import { useEffect, useState } from "react";
 import {Search} from '@/components/search'
 import {DropdownComponent} from '@/components/dropdown'

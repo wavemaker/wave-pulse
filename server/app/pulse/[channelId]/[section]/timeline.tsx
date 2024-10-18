@@ -1,7 +1,7 @@
 import React,{ useCallback, useMemo, useState} from "react";
 import {  Button,Tooltip } from "@nextui-org/react";
 import {  DeleteIcon } from "@nextui-org/shared-icons";
-import {  TimelineEvent } from "@wavemaker/wavepulse-agent/src/types";
+import {  TimelineEvent } from "@/types";
 import TimelineRangeSlider from "@/components/timelinerangeslider";
 
 const logColors = {

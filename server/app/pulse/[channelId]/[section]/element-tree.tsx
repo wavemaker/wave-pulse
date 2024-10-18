@@ -1,10 +1,9 @@
 import { IconBxsDownArrow, IconBxsLeftArrow, RefreshIcon } from "@/components/icons";
 import { Accordion, AccordionItem, Button, Select, SelectItem, Tab, Tabs } from "@nextui-org/react";
-import { CALLS } from "@wavemaker/wavepulse-agent/src/constants";
-import { WidgetNode } from "@wavemaker/wavepulse-agent/src/types";
+import { CALLS  } from "@wavemaker/wavepulse-agent";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
-import { UIAgentContext, useAppInfo, useComponentTree, useConsole, useNetworkRequests, usePlatformInfo, useStorageEntries } from "@/hooks/hooks";
-import { DeleteIcon } from "@nextui-org/shared-icons";
+import { UIAgentContext } from "@/hooks/hooks";
+import { WidgetNode } from '@/types';
 
 
 export type Props = {

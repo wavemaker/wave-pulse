@@ -1,7 +1,5 @@
 "use client";
-import { Agent } from '@wavemaker/wavepulse-agent/src/agent';
-import { Channel, WebSocketChannel } from '@wavemaker/wavepulse-agent/src/channel';
-import { CALLS } from '@wavemaker/wavepulse-agent/src/constants';
+import { Agent, Channel, WebSocketChannel, CALLS } from '@wavemaker/wavepulse-agent';
 import axios from 'axios';
 import { Subject } from 'rxjs';
 
@@ -17,22 +15,20 @@ export class UIAgent extends Agent {
 
     constructor(private wsurl: string,
         private httpurl: string,
+        public channelId: string,
         private localStorage: Storage,
-        sessionDataKey?: string) {
+        sessionDataKey?: string,) {
         sessionDataKey = sessionDataKey || localStorage.getItem(WAVEPULSE_SESSION_DATA) || '';
         super(sessionDataKey ? {
             send: () => {},
             setListener: () => {}
         } as Channel: WebSocketChannel.connect({
-            url: wsurl
+            url: wsurl,
+            channelId: channelId
         }));
-        if (sessionDataKey) {
-            this.getSessionData(sessionDataKey).then(data => {
-                this._sessionData = data;
-            });
-        } else {
+        if (!sessionDataKey) {
             this.checkForWavePulseAgent();
-        }
+        };
         this._sessionDataKey = sessionDataKey || '';
     }
 
@@ -89,34 +85,42 @@ export class UIAgent extends Agent {
 
     public getWavepulseUrl({appId, expoUrl} : {appId?: string, expoUrl?: string}) {
         if (appId) {
-            return axios.get(`${this.httpurl}/api/service/url?appId=${appId}`).then(res => res.data);
+            return axios.get(`${this.httpurl}/api/service/url?appId=${appId}&channelId=${this.channelId}`).then(res => res.data);
         } else if(expoUrl) {
-            return axios.get(`${this.httpurl}/api/service/url?expoUrl=${expoUrl}`).then(res => res.data);
+            return axios.get(`${this.httpurl}/api/service/url?expoUrl=${expoUrl}&channelId=${this.channelId}`).then(res => res.data);
         }
         return Promise.resolve('');
     }
 
-    saveSessionData(name: string) {
+    exportSessionData(name: string) {
+        name = name + '.wavepulse';
         const form = new FormData();
-        const dataToSave = {
-            // timelineLogs : this.currentSessionData.timelineLogs
-            ...this.currentSessionData
-        };
-        form.append('name', name);
-        form.append('content', JSON.stringify(dataToSave));
-        return axios.post(`${this.httpurl}/api/session/data`,form,  {
+        form.append('filename', name);
+        const entries = [] as any;
+        Object.keys(this.currentSessionData).forEach((k: string) => {
+            form.append(k, JSON.stringify(this.currentSessionData[k]));
+            entries.push(k);
+        });
+        form.append('entries', JSON.stringify(entries));
+        return axios.post(`${this.httpurl}/api/session/data/export`, form,  {
             headers: {
                 'Content-Type': 'multipart/form'
             }
+        }).then(res => {
+            window.location.href = `${this.httpurl}/api/session/data/${res.data.path}?name=${name}.zip`;
         });
     }
 
-    getSessionData(id: string) {
-        return axios.get(`${this.httpurl}/api/session/data/${id}`)
-            .then((res) => (res.data || {}));
-    }
-
-    listSessionData() {
-        return axios.get(`${this.httpurl}/api/session/data/list`).then(res => res.data);
+    importSessionData(file: any) {
+        const formData = new FormData();
+        formData.append("file", file);
+        return axios.post(`${this.httpurl}/api/session/data/import`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form'
+            }
+        }).then((res) => {
+            this._sessionData = {...res.data};
+            this._sessionDataKey = file.name;
+        });
     }
 }

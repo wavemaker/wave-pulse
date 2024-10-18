@@ -13,6 +13,9 @@ const execaOptions = {
 const projectDir = '.';
 
 async function updatePackageVersion(packagePath, key, version) {
+    if (!version) {
+        return;
+    }
     let content = readFileSync(packagePath, 'utf8');
     content = content.replace(new RegExp(`"${key}"\\s*:\\s*"[^"]*"`), `"${key}": "${version}"`);
     writeFileSync(packagePath, content);
@@ -26,9 +29,6 @@ async function postBuild(runtimeVersion) {
     });
     packageData.main = 'index';
     packageData.module = 'index';
-    packageData.exports = {
-      "./": "./"
-    };
     packageData.scripts = {}; 
     writeFileSync(`${projectDir}/dist/module/package.json`, JSON.stringify(packageData, null, 2))
     await updatePackageVersion(`${projectDir}/dist/module/package.json`, 'version', runtimeVersion);
@@ -49,8 +49,7 @@ yargs(hideBin(process.argv)).command('post-build',
     (yargs) => {
         yargs.option('ver', {
             describe: 'version number',
-            type: 'string',
-            default: '1.0.0-dev-7'
+            type: 'string'
         }).option('production', {
             describe: 'to perform a production build',
             type: 'boolean',
@@ -61,8 +60,7 @@ yargs(hideBin(process.argv)).command('post-build',
             if (argv.production) {
                 return execa('npm', [
                     'publish', 
-                    '--access=public',
-                    '--tag=dev'
+                    '--access=public'
                 ], {
                     ...execaOptions,
                     cwd: `${projectDir}/dist/module`

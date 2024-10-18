@@ -1,20 +1,21 @@
 import { UIAgentContext } from "@/hooks/hooks";
-import { Modal, ModalHeader, ModalContent, ModalBody, ModalFooter, Button, useDisclosure, Select, SelectItem, Switch } from "@nextui-org/react";
+import { Modal, ModalHeader, ModalContent, ModalBody, ModalFooter, Button, useDisclosure, Select, SelectItem, Switch, Input } from "@nextui-org/react";
 import { useCallback, useContext, useEffect, useState } from "react";
+import {IconImport} from '@/components/icons';
+import axios from "axios";
+
 
 export const Settings = (props: {
     isOpen?: boolean,
     onOpen?: Function,
     onClose?: Function
 }) => {
+   
     const {isOpen, onOpen, onOpenChange, } = useDisclosure();
     const uiAgent = useContext(UIAgentContext);
     const [isConnected, setIsConnected] = useState(uiAgent.isConnected);
-    const [selectedSessionData, setSelectedSessionData] = useState(uiAgent.sessionDataKey);
-    const [sessionDataArr, setSessionDataArr] = useState([]);
     const applyFn = useCallback((onClose: Function) => {
-        uiAgent.sessionDataKey = selectedSessionData;
-    }, [isConnected, selectedSessionData]);
+    }, [isConnected]);
     useEffect(() => {
         if (props.isOpen) {
             onOpen();
@@ -28,13 +29,9 @@ export const Settings = (props: {
         }
     }, [isOpen]);
     useEffect(() => {
-        uiAgent.listSessionData().then((data) => {
-            setSessionDataArr(data);
-        });
-    }, [props.isOpen]);
-    useEffect(() => {
         setIsConnected(uiAgent.isConnected);
     }, [uiAgent.isConnected]);
+
     return (
         <Modal size='4xl' isOpen={isOpen} onOpenChange={onOpenChange}>
            <ModalContent>
@@ -49,26 +46,7 @@ export const Settings = (props: {
                         <div className="py-2 w-6/12">
                             <Switch isSelected={isConnected} onValueChange={(isSelected) => {
                                 setIsConnected(isSelected);
-                                setSelectedSessionData('');
                             }}/>
-                        </div>
-                    </div>
-                    <div className="flex flex-row border-b">
-                        <div className="flex flex-shrink-0 flex-wrap content-center text-sm font-bold w-6/12 px-4 py-1">Load from old session</div>
-                        <div className="py-1 w-6/12">
-                        <Select size="md" 
-                            className="max-w-xs" 
-                            placeholder="Load from" 
-                            selectedKeys={[selectedSessionData]}
-                            onSelectionChange={(s) => {
-                                setSelectedSessionData((s ? s.currentKey : '') || '');
-                            }}>
-                            {sessionDataArr.map((o: string) => (
-                            <SelectItem key={o}>
-                                {o.substring(0, o.lastIndexOf('.'))}
-                            </SelectItem>
-                            ))}
-                        </Select>
                         </div>
                     </div>
                 </ModalBody>

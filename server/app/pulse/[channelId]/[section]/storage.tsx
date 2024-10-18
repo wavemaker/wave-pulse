@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button} from "@nextui-org/react";
 
-import { AppInfo, PlatformInfo } from "@wavemaker/wavepulse-agent/src/types";
+import { AppInfo, PlatformInfo } from "@/types";
 import { KeyValuePair, KeyValueProps } from "@/components/key-pair";
 import { RefreshIcon } from "@/components/icons";
 
 export type Props = {
     data: any,
+    active: boolean,
     refreshStorage: Function
 };
 
@@ -21,6 +22,11 @@ export const Storage = (props: Props) => {
             })) || []
         });
     }, [storage]);
+    useEffect(() => {
+        if (props.active) {
+            props.refreshStorage();
+        }
+    }, [props, props.active]);
     return (
         <div className="flex flex-col h-full bottom-8">
             <div className=" bg-zinc-100 px-4 py-1 flex flex-row content-center sticky top-0 w-full ">

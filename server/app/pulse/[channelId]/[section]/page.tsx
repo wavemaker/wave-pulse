@@ -1,6 +1,6 @@
 "use client";
 
-import { UIAgentContext, useAppInfo, useComponentTree, useConsole, useNetworkRequests, usePlatformInfo, useStorageEntries, useTimelineLog } from "@/hooks/hooks";
+import { UIAgentContext, useAppInfo, useComponentTree, useConsole, useLocalStorage, useLocation, useNetworkRequests, usePlatformInfo, useStorageEntries, useTimelineLog } from "@/hooks/hooks";
 import { Tabs, Tab, Button, Input, DropdownMenu, DropdownItem, Dropdown, DropdownTrigger, ButtonGroup } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useContext, useState, useEffect , useMemo, useCallback} from "react";
@@ -8,16 +8,17 @@ import { Info } from "./info";
 import { Network } from "./network";
 import { Console } from "./console";
 import { Storage } from "./storage";
-import { SaveDataIcon, SolarSettingsBoldIcon } from "@/components/icons";
+import { IconExport, IconImport } from "@/components/icons";
 import { Settings } from "./settings";
 import { SaveDataDialog } from "./savedata";
 import { ElementTree } from "./element-tree";
-import { WidgetNode } from "@wavemaker/wavepulse-agent/src/types";
+import { WidgetNode } from "@/types";
 import {BreadcrumbsComponent} from "@/components/breadcrumbs";
 import { TimeLine } from "./timeline";
 import {Session} from './session';
 import QRCode from "react-qr-code";
 import { ChevronDownIcon } from "@nextui-org/shared-icons";
+import { UIAgent } from "@/wavepulse/ui-agent";
 
 const connectOptions = {
   mobile: {
@@ -34,8 +35,7 @@ const connectOptions = {
   }*/
 };
 
-export default function PulsePage({ params }: { params: { section: string } } ) {
-
+function PulsePage({ section, refresh }: { section: string, refresh: Function } ) {
   const router = useRouter();
   const uiAgent = useContext(UIAgentContext);
   const appInfo = useAppInfo();
@@ -47,7 +47,7 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
   const {componentTree, refreshComponentTree, highlight} = useComponentTree();
   const [isSettingsOpened, setIsSettingsOpen] = useState(false);
   const [isSaveDataOpened, setIsSaveDataOpen] = useState(false);
-  const [selected, setSelected] = useState(params.section);
+  const [selected, setSelected] = useState(section);
   const [isConnected, setIsConnected] = useState(false);
   const [selectedWidget, setSelectedWidget] = useState<WidgetNode>(null as any);
   const [breadcrumbData, setBreadcrumbData]=useState<WidgetNode[]>();
@@ -78,18 +78,13 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
   useEffect(() => {
     history.pushState(null, null as any, `./${selected}`);
   }, [selected]);
+  const handleFileSelect = async (e:any) => {
+    const file = e.target.files[0];
+    uiAgent.importSessionData(file).then(() => refresh());
+  };
   const onselectBreadCrumbCallback = useCallback((props:any) => {
    setSelectedWidget(props);
-  },[])
-
-  //here
-  useEffect(() => {
-    uiAgent.listSessionData().then((data) => {
-        setSessionDataArr(data);
-    });
-}, []);
-
-// console.log('sessiondataarray', sessionDataArr);
+  },[]);
   return (
     <div className="w-full h-full flex flex-col">
       {isConnected ? 
@@ -130,14 +125,14 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
             Performance is under construction.
           </Tab> */}
           <Tab key="storage" title="Storage">
-            <Storage data={storage} refreshStorage={refreshStorage}></Storage>
+            <Storage data={storage} refreshStorage={refreshStorage} active={section === 'storage'}></Storage>
           </Tab>
           <Tab key="info" title="Info">
             <Info appInfo={appInfo} platformInfo={platformInfo}></Info> 
           </Tab>
-          <Tab key="session" title="Session">
+          {/* <Tab key="session" title="Session">
             <Session sessionData={sessionDataArr}></Session>
-          </Tab>
+          </Tab> */}
         </Tabs>) : 
         null }
         {isConnected ? null : (
@@ -242,7 +237,7 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
         )}
       <SaveDataDialog isOpen={isSaveDataOpened} onClose={() => setIsSaveDataOpen(false)}></SaveDataDialog>
       <Settings isOpen={isSettingsOpened} onClose={() => setIsSettingsOpen(false)}></Settings>
-      <div className="bg-zinc-100 py-1 px-8 w-full flex flex-row justify-between content-center border-t-2 border-zinc-300">
+      <div className="bg-zinc-100 py-1 px-8 w-full flex sticky bottom-0 flex-row justify-between content-center border-t-2 border-zinc-300">
         <div className="flex flex-row content-center">
           <span className={'text-xs font-bold ' + (uiAgent.isConnected || uiAgent.sessionDataKey ? '' : 'text-red-500')}>
             {uiAgent.isConnected ? 'Connected to device' : (uiAgent.sessionDataKey ? 'Data loaded from : ' + uiAgent.sessionDataKey : 'Waiting for connection...')}
@@ -253,15 +248,54 @@ export default function PulsePage({ params }: { params: { section: string } } ) 
             <div className="align-end cursor-pointer mr-4" onClick={() => {
             setIsSaveDataOpen(true);
           }}>
-            <SaveDataIcon color="#666" width={20} height={20}></SaveDataIcon>
+            <IconExport color="#666" width={20} height={20}></IconExport>
           </div>) : null }
-          <div className="align-end cursor-pointer" onClick={() => {
+          <div className="flex icontent-center px-2">
+              <input
+                  type="file"
+                  accept=".zip"
+                  onChange={(event)=>handleFileSelect(event)}
+                  style={{ display: 'none' }}
+                  id="fileInput"
+              />
+              <label htmlFor="fileInput" className=" cursor-pointer">
+                  <IconImport color="#666" width={20} height={20}/>
+              </label>
+          </div>
+          {/* <div className="align-end cursor-pointer" onClick={() => {
             setIsSettingsOpen(true);
           }}>
             <SolarSettingsBoldIcon color="#666" width={20} height={20}></SolarSettingsBoldIcon>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
   );
+};
+
+export default ({ params }: { params: { section: string, channelId: string } } ) => {
+  const location = useLocation();
+  const localStorage = useLocalStorage();
+  const [uiAgent, setUIAgent] = useState<UIAgent>(null as any);
+  const [key, setKey] = useState(0);
+  useEffect(() => {
+    if (key % 2) {
+      setTimeout(() => setKey(key + 1), 100);
+    }
+  }, [key]);
+  useEffect(() => {
+    if (!location || !localStorage) {
+      return;
+    }const server = location.href.split('/pulse')[0];
+    setUIAgent(new UIAgent(
+      server.replace(/(https\/\/)/, 'wss://')
+        .replace(/(http:\/\/)/, 'ws://'),
+        server,
+        params.channelId,
+        localStorage));
+  }, [location, localStorage]);
+  return uiAgent && 
+    (<UIAgentContext.Provider value={uiAgent}>
+      <PulsePage section={params.section} key={key} refresh={() => setKey(key + 1)}/>
+    </UIAgentContext.Provider>);
 }
