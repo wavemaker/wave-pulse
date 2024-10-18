@@ -21,18 +21,20 @@ export class WebSocketChannel implements Channel {
 
     listener: (message: Message) => void = undefined as any;
 
-    static connect({url, channelId}: {
+    static connect({url, channelId, path}: {
         url: string,
         channelId: string,
+        path?: string
     }) {
-        return new WebSocketChannel({url, channelId});
+        return new WebSocketChannel({url, channelId, path});
     }
 
-    private constructor({url, channelId}: {
+    private constructor({url, channelId, path = '/socket.io'}: {
         url: string,
         channelId: string,
+        path?: string
     }) {
-        this.socket = io(url);
+        this.socket = io(url, {path});
         this.channelId = channelId;
         this.socket.emit('join', {channelId: channelId});
         this.socket.on('message', (message: Message) => {
