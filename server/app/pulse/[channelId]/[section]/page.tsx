@@ -237,7 +237,7 @@ function PulsePage({ section, refresh }: { section: string, refresh: Function } 
         )}
       <SaveDataDialog isOpen={isSaveDataOpened} onClose={() => setIsSaveDataOpen(false)}></SaveDataDialog>
       <Settings isOpen={isSettingsOpened} onClose={() => setIsSettingsOpen(false)}></Settings>
-      <div className="bg-zinc-100 py-1 px-8 w-full flex flex-row justify-between content-center border-t-2 border-zinc-300">
+      <div className="bg-zinc-100 py-1 px-8 w-full flex sticky bottom-0 flex-row justify-between content-center border-t-2 border-zinc-300">
         <div className="flex flex-row content-center">
           <span className={'text-xs font-bold ' + (uiAgent.isConnected || uiAgent.sessionDataKey ? '' : 'text-red-500')}>
             {uiAgent.isConnected ? 'Connected to device' : (uiAgent.sessionDataKey ? 'Data loaded from : ' + uiAgent.sessionDataKey : 'Waiting for connection...')}
