@@ -286,7 +286,8 @@ export default ({ params }: { params: { section: string, channelId: string } } )
   useEffect(() => {
     if (!location || !localStorage) {
       return;
-    }const server = location.href.split('/pulse')[0];
+    }
+    const server = location.href.split('/wavepulse/client')[0] + '/wavepulse';
     setUIAgent(new UIAgent(
       server.replace(/(https\/\/)/, 'wss://')
         .replace(/(http:\/\/)/, 'ws://'),
