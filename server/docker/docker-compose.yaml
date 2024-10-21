@@ -1,0 +1,11 @@
+version: "3.9"
+services:
+  wavepulse:
+    image: wavepulse
+    environment:
+      - WAVEPULSE_BASE_URL=${WAVEPULSE_BASE_URL}
+    build:
+      context: ./
+      dockerfile: dockerfile
+    ports:
+      - "80:3000"
