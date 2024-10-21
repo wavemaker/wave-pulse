@@ -35,7 +35,7 @@ const connectOptions = {
   }*/
 };
 
-function PulsePage({ section, refresh }: { section: string, refresh: Function } ) {
+function PulsePage({ section, refresh, channelId }: { section: string, refresh: Function, channelId: string } ) {
   const router = useRouter();
   const uiAgent = useContext(UIAgentContext);
   const appInfo = useAppInfo();
@@ -207,7 +207,12 @@ function PulsePage({ section, refresh }: { section: string, refresh: Function } 
                 <div className="p-2 text-sm" style={{width: 400}}>
                   <div className="text-sm text-gray-400">{"2) Execute the below code in the developer console."}</div>
                 </div>
-                <pre className="text-black text-sm">{`wm.App.tryToconnectWavepulse('${((url && url.match(/http(s)?:\/\/[^\/]*/)) || [''])[0]}');`}</pre>
+                <pre className="text-sm bg-gray-800 text-gray-200">{`
+  wm.App.tryToconnectWavepulse({
+    url: '${((url && url.match(/http(s)?:\/\/[^\/]*/)) || [''])[0]}/wavepulse', 
+    channelId: '${channelId}'
+  });
+                `}</pre>
               </div>) : null
             }
             {
@@ -297,6 +302,6 @@ export default ({ params }: { params: { section: string, channelId: string } } )
   }, [location, localStorage]);
   return uiAgent && 
     (<UIAgentContext.Provider value={uiAgent}>
-      <PulsePage section={params.section} key={key} refresh={() => setKey(key + 1)}/>
+      <PulsePage section={params.section} key={key} channelId={params.channelId} refresh={() => setKey(key + 1)}/>
     </UIAgentContext.Provider>);
 }
