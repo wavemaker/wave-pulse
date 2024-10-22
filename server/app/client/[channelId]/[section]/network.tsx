@@ -1,7 +1,7 @@
 import React from "react";
 import { KeyValuePair, KeyValueProps } from "@/components/key-pair";
 import { Accordion, AccordionItem, Button, Tab, Table, Tabs } from "@nextui-org/react";
-import { CloseIcon } from "@nextui-org/shared-icons";
+import { CloseIcon, DeleteIcon } from "@nextui-org/shared-icons";
 import { NetworkRequest } from "@/types";
 import { useEffect, useState } from "react";
 import {Search} from '@/components/search'
@@ -16,7 +16,8 @@ const logColors = {
 } as any;
 
 export type Props = {
-    requests: NetworkRequest[]
+    requests: NetworkRequest[],
+    clear: Function
 };
 
 const GeneralHeaders = [
@@ -227,6 +228,13 @@ export const Network = (props: Props) => {
                         selectedKeys={selectedKeys} 
                         selectedValue={selectedValue}
                     />
+                    <Button
+                        isIconOnly
+                        className="bg-transparent w-8 h-6 float-right"
+                        onClick={() => props.clear()}
+                    >
+                        <DeleteIcon></DeleteIcon>
+                    </Button>
                 </div>
             </div>
 
@@ -249,12 +257,13 @@ export const Network = (props: Props) => {
                                 setSelectedReq(r);
                             }} 
                             className={
-                                "flex flex-row w-svw border border-x-0 border-t-0 px-4 py-1 cursor-pointer hover:bg-zinc-50 " 
+                                "flex flex-row w-svw items-center border border-x-0 border-t-0 px-4 py-1 cursor-pointer hover:bg-zinc-50 " 
                                 + (r === selectedReq ? 'bg-zinc-100' : '' )
                             }>
                             <div className="flex-shrink-0 text-xs text-color w-2/12">{r.name}</div>
-                            <div className={"flex-shrink-0 px-0 text-xs w-1/12 text-center border rounded-lg " + (logColors[r.method] || '')}>
-                            <span>{r.method.toUpperCase()}</span></div>
+                            <div className={"flex-shrink-0 px-0 w-1/12 flex flex-row  justify-center "}>
+                            <span className={"px-2 text-xs text-center border rounded-lg " + (logColors[r.method] || '')}
+                                style={{width: 68}}>{r.method.toUpperCase()}</span></div>
                             <div className="flex-shrink-0 px-8 text-xs w-1/12">{r.status}</div>
                             <div className="flex-shrink-0 px-8 text-xs w-1/12">{r.time}</div>
                             <div className="px-8 text-xs w-7/12">

@@ -131,7 +131,7 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
             </div>
           </Tab>
           <Tab key="network" title="Network">
-            <Network requests={requests}></Network>
+            <Network requests={requests} clear={clearRequests}></Network>
           </Tab>
           <Tab key="timeline" title="Timeline">
             <TimeLine timelineLogs={timelineLogs} clearTimelineLogs={clearTimelineLogs}></TimeLine>
