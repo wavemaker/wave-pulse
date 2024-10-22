@@ -40,14 +40,15 @@ export const TimeLine = ({timelineLogs, clearTimelineLogs}: Props) => {
             {key:'N', value:'Network Request'},
             {key:'V', value: 'Variable'},
             {key:'P', value: 'Page StartUp'}
-        ]
-    },[])
+        ].filter(c => timelineLogs.find(e => e.name.startsWith(c.key)))
+    },[timelineLogs])
     const startTime = useMemo(() => ((timelineLogs && timelineLogs[0]?.startTime) || 0), [timelineLogs && timelineLogs[0]?.startTime]);      
     const endTime =  useMemo(() => {
-        return (
-            (timelineLogs[timelineLogs.length - 1]?.endTime) || 0);
-    }, [timelineLogs[timelineLogs.length - 1]?.endTime]);
+        return Math.min(
+            (timelineLogs[timelineLogs.length - 1]?.endTime) || 0), startTime + 6 * 1000;
+    }, [timelineLogs[timelineLogs.length - 1]?.endTime, startTime]);
     const totalTime = useMemo(() => endTime - startTime, [startTime, endTime]);
+    const [showTillEnd, setShowTillEnd] = useState(true);
     const [currentstartTime, setcurrentstartTime] = useState(0);
     const [currentendTime, setcurrentendTime] = useState(endTime);
     const [checkboxDataState,setcheckboxDataState] = useState(['A','N','V','P']);
@@ -55,9 +56,10 @@ export const TimeLine = ({timelineLogs, clearTimelineLogs}: Props) => {
     const [maxRange, setmaxRange]=useState(60);
 
 
-    const onclickCallBack = useCallback((startTime:number, endTime:number) => {
+    const onclickCallBack = useCallback((startTime:number, _endTime:number) => {
         setcurrentstartTime(startTime);
-        setcurrentendTime(endTime);
+        setcurrentendTime(_endTime);
+        setShowTillEnd(Math.abs(_endTime - endTime) <= 500);
     }, [currentstartTime, currentendTime]);
 
     const searchCallBack = useCallback((val1:any,val2:any) => {
@@ -101,8 +103,8 @@ export const TimeLine = ({timelineLogs, clearTimelineLogs}: Props) => {
                 </Button>
                 </div>
             </div>
-            <div className='w-100 flex flex-row'>
-                <div className="w-3/12 flex flex-col justify-around pl-4 cursor-pointer">
+            <div className='w-100 flex flex-row' style={{minHeight: '7em'}}>
+                <div className="w-3/12 flex flex-col justify-start pl-4 cursor-pointer">
                 {
                     
                    checkBoxData.map((d,i)=>{
@@ -124,16 +126,16 @@ export const TimeLine = ({timelineLogs, clearTimelineLogs}: Props) => {
                     startTime={new Date(startTime)} 
                     endTime={new Date(endTime)} 
                     currentstartTime={new Date(currentstartTime)} 
-                    currentendTime={new Date(currentendTime)} 
+                    currentendTime={new Date(showTillEnd ? endTime : currentendTime)} 
                     searchCallBack={searchCallBack}/> 
                 }
                 </div>
             </div>
 
-                <div className="flex flex-row border border-x-0 px-4 py-1 w-svw sticky top-0 bg-zinc-100">
-                    <div className="flex-shrink-0 text-xs text-color w-2/12 font-bold">Name</div>
-                    <div className="flex-shrink-0 px-8 text-xs w-1/12 font-bold">Time</div>
-                    <div className="px-8 text-xs w-7/12 font-bold">Waterfall</div>
+                <div className="flex flex-row border border-x-0 py-1 w-svw sticky top-0 bg-zinc-100">
+                    <div className="flex-shrink-0 text-xs text-color px-4 w-2/12 font-bold">Name</div>
+                    <div className="flex-shrink-0 px-8 text-xs w-1/12 font-bold">Time (ms)</div>
+                    <div className="px-8 text-xs w-9/12 font-bold">Waterfall</div>
                 </div>
               
             {
@@ -145,20 +147,20 @@ export const TimeLine = ({timelineLogs, clearTimelineLogs}: Props) => {
                     return (checkboxDataState.includes(e.name[0]) && new Date(e.startTime).getSeconds() >= minRange  && new Date(e.endTime).getSeconds() <= maxRange)   ? (
                         <div 
                             className={
-                                "flex flex-row w-svw border border-x-0 border-t-0 px-4 py-1 cursor-pointer hover:bg-zinc-50 "
+                                "flex flex-row w-svw border border-x-0 border-t-0 py-1 cursor-pointer hover:bg-zinc-50 "
                             }
                             key={i}
                             >
                             <Tooltip content={e.info.desc}>
-                                <div className="flex flex-row w-2/12 items-center"> 
+                                <div className="flex flex-row w-2/12 px-4 items-center"> 
                                     <div className={" text-xs text-color w-4 h-4 justify-center items-center  p-1 text-center border rounded-full flex " + logColors[e.name[0].toUpperCase()]}>
                                         {e.name[0]}
                                     </div>      
                                     <div className={" flex text-xs text-color items-center pl-2" } >{e.info.title}</div>
                                 </div>
                             </Tooltip>
-                            <div className="flex-shrink-0 px-8 text-xs ">{e.endTime - e.startTime}</div>
-                            <div className="px-8 text-xs w-7/12">
+                            <div className="flex-shrink-0 px-8 w-1/12 text-xs ">{e.endTime - e.startTime}</div>
+                            <div className="text-xs w-9/12">
                                 <div className={"h-4 text-center border text-white " + logColors[e.name[0].toUpperCase()]} style={{
                                     marginLeft: mx + '%',
                                     width: w ? w + '%' : '2px'

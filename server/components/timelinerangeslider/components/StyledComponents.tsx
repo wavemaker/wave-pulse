@@ -4,7 +4,7 @@ import type { StyledTrackProps } from '../types'
 export const TimeRangeContainer = styled.div`
     position: relative;
    display:flex;
-   padding:8px 0px 20px 28px;
+   padding:0;
    flex:1;
     box-sizing: border-box;
     height: 6em;

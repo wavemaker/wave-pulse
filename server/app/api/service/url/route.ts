@@ -4,7 +4,7 @@ import os from 'os';
 function getIpAddress() {
     var interfaces = os.networkInterfaces();
     for(var key in interfaces) {
-        var addresses = interfaces[key];
+        var addresses = (interfaces[key])?.reverse();
         if (addresses) {
             for(var i = 0; i < addresses.length; i++) {
                 var address = addresses[i];
