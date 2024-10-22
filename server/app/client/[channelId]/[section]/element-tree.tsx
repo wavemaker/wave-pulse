@@ -162,6 +162,19 @@ export const ElementTree = (props: Props) => {
                         tab: 'w-auto h-full',
                         panel: 'p-0 nr-panel-tab-panel overflow-auto bg-zinc-50'
                     }} >
+                        <Tab key="props" title="Properties" className="overflow-hidden">
+                            {(properties || []).map((e: any) => {
+                                return (
+                                <div className="flex flex-rows p-1 border-b-1">
+                                    <div className="w-6/12 font-bold text-xs" title={e[0]}>
+                                        {e[0]}
+                                    </div>
+                                    <div className="w-6/12 px-1 text-xs whitespace-nowrap" title={e[1] + ''}>
+                                        {e[1] + ''}
+                                    </div>
+                                </div>);
+                            })}
+                        </Tab>
                         <Tab key="styles" title="Styles" className="h-full">
                             <div className="flex flex-col h-full">
                                 <div className="p-1">
@@ -211,19 +224,6 @@ export const ElementTree = (props: Props) => {
                                     })}
                                 </div>
                             </div>
-                        </Tab>
-                        <Tab key="props" title="Properties" className="overflow-hidden">
-                            {(properties || []).map((e: any) => {
-                                return (
-                                <div className="flex flex-rows p-1 border-b-1">
-                                    <div className="w-6/12 font-bold text-xs" title={e[0]}>
-                                        {e[0]}
-                                    </div>
-                                    <div className="w-6/12 px-1 text-xs whitespace-nowrap" title={e[1] + ''}>
-                                        {e[1] + ''}
-                                    </div>
-                                </div>);
-                            })}
                         </Tab>
                     </Tabs>
             </div>
