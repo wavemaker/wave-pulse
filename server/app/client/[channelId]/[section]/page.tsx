@@ -115,10 +115,11 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
             <Console logs={logs} clear={clearLogs}></Console>
           </Tab>
           <Tab key="elements" title="Elements">
-            <div className="h-full ">
+            <div className="h-full pb-6">
               <ElementTree root={componentTree} refreshComponentTree={refreshComponentTree} isSelected={(n) => {
                 return selectedWidget && n.id === selectedWidget.id}}  onSelect={(n,path) => {
                   setBreadcrumbData([...(path || []), n]);
+                  setSelectedWidget(n);
                 highlight(n.id);
               }} onHover={(n) => {
                 highlight(n.id);
