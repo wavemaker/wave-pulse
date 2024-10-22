@@ -52,20 +52,23 @@ export const useConsole = () => {
 export const useAppInfo = () => {
     const uiAgent = useContext(UIAgentContext);
     const [appInfo, setAppInfo] = useState({} as AppInfo);
-    useEffect(() => {
-        setAppInfo(uiAgent.sessionData.appInfo || {});
-    }, [uiAgent.sessionData]);
-    useEffect(() => {
+    const refreshAppInfo = useCallback(() => {
         uiAgent.invoke(CALLS.APP.INFO, [])
         .then((args: any) => {
             const appInfo = args as AppInfo;
             setAppInfo(appInfo);
         });
+    }, [appInfo]);
+    useEffect(() => {
+        setAppInfo(uiAgent.sessionData.appInfo || {});
+    }, [uiAgent.sessionData]);
+    useEffect(() => {
+        refreshAppInfo();
     }, []);
     useEffect(() => {
         uiAgent.currentSessionData.appInfo = appInfo;
     }, [appInfo]);
-    return appInfo;
+    return { appInfo, refreshAppInfo };
 };
 
 export const useStorageEntries = () => {
@@ -92,20 +95,23 @@ export const useStorageEntries = () => {
 export const usePlatformInfo = () => {
     const uiAgent = useContext(UIAgentContext);
     const [platformInfo, setPlatformInfo] = useState({} as PlatformInfo);
-    useEffect(() => {
-        setPlatformInfo(uiAgent.sessionData.platformInfo || {});
-    }, [uiAgent.sessionData]);
-    useEffect(() => {
+    const refreshPlatformInfo = useCallback(() => {
         uiAgent.invoke(CALLS.PLATFORM.INFO, [])
         .then((args: any) => {
             const platformInfo = args as PlatformInfo;
             setPlatformInfo(platformInfo);
         });
+    }, [platformInfo]);
+    useEffect(() => {
+        setPlatformInfo(uiAgent.sessionData.platformInfo || {});
+    }, [uiAgent.sessionData]);
+    useEffect(() => {
+        refreshPlatformInfo();
     }, []);
     useEffect(() => {
         uiAgent.currentSessionData.platformInfo = platformInfo;
     }, [platformInfo]);
-    return platformInfo;
+    return {platformInfo, refreshPlatformInfo};
 };
 
 export const useVariables = () => {

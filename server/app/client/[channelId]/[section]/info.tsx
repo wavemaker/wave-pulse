@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
-import {Table, TableHeader, TableColumn, TableBody, TableRow, TableCell} from "@nextui-org/react";
+import { Button } from "@nextui-org/react";
 
 import { AppInfo, PlatformInfo } from "@/types";
 import { KeyValuePair, KeyValueProps } from "@/components/key-pair";
+import { RefreshIcon } from "@/components/icons";
 
 export type Props = {
     appInfo: AppInfo,
-    platformInfo: PlatformInfo
+    platformInfo: PlatformInfo,
+    refresh: Function
 };
 
 export const Info = (props: Props) => {
@@ -58,7 +60,19 @@ export const Info = (props: Props) => {
         })
     }, [appInfo, platformInfo]);
     return (
-        <div className="max-w-4xl border-r-1">
+        <div className="flex flex-col h-full bottom-8">
+            <div className=" bg-zinc-100 px-4 py-1 flex flex-row content-center sticky top-0 w-full ">
+                <div className="flex flex-1 flex-col justify-center "></div>
+                <div className="flex flex-1 flex-wrap flex-row content-center justify-end">
+                    <Button
+                        isIconOnly
+                        className="bg-transparent w-8 h-6 float-right"
+                        onClick={() => props.refresh && props.refresh()}
+                    >
+                        <RefreshIcon color="#bbb" scale={24}></RefreshIcon>
+                    </Button>
+                </div>
+            </div>
         { info ? (<KeyValuePair {...info}></KeyValuePair>) : null }
         </div>
     );

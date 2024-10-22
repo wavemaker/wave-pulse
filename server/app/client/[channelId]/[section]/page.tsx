@@ -38,8 +38,8 @@ const connectOptions = {
 function PulsePage({ section, refresh, channelId }: { section: string, refresh: Function, channelId: string } ) {
   const router = useRouter();
   const uiAgent = useContext(UIAgentContext);
-  const appInfo = useAppInfo();
-  const platformInfo = usePlatformInfo();
+  const {appInfo, refreshAppInfo} = useAppInfo();
+  const {platformInfo, refreshPlatformInfo} = usePlatformInfo();
   const {requests, clearRequests} = useNetworkRequests();
   const {timelineLogs, clearTimelineLogs} = useTimelineLog();
   const {storage, refreshStorage} = useStorageEntries();
@@ -95,7 +95,22 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
           panel: 'p-0 overflow-auto debug-panel-tab-panel'
         }}       
         selectedKey={selected}
-        onSelectionChange={(key) => setSelected(key as string)}>
+        onSelectionChange={(key) => {
+          switch(key) {
+            case 'elements':
+              refreshComponentTree();
+              break;
+            case 'storage':
+              refreshStorage();
+              break;
+            case 'info': {
+              refreshAppInfo();
+              refreshPlatformInfo();
+              break;
+            }
+          }
+          setSelected(key as string)
+        }}>
           <Tab key="console" title="Console">
             <Console logs={logs} clear={clearLogs}></Console>
           </Tab>
@@ -116,7 +131,7 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
             </div>
           </Tab>
           <Tab key="network" title="Network">
-            <Network requests={requests}></Network>
+            <Network requests={requests} clear={clearRequests}></Network>
           </Tab>
           <Tab key="timeline" title="Timeline">
             <TimeLine timelineLogs={timelineLogs} clearTimelineLogs={clearTimelineLogs}></TimeLine>
@@ -125,10 +140,13 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
             Performance is under construction.
           </Tab> */}
           <Tab key="storage" title="Storage">
-            <Storage data={storage} refreshStorage={refreshStorage} active={section === 'storage'}></Storage>
+            <Storage data={storage} refreshStorage={refreshStorage}></Storage>
           </Tab>
           <Tab key="info" title="Info">
-            <Info appInfo={appInfo} platformInfo={platformInfo}></Info> 
+            <Info appInfo={appInfo} platformInfo={platformInfo} refresh={() => {
+              refreshAppInfo();
+              refreshPlatformInfo();
+            }}></Info> 
           </Tab>
           {/* <Tab key="session" title="Session">
             <Session sessionData={sessionDataArr}></Session>
