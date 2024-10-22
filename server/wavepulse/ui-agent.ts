@@ -52,7 +52,7 @@ export class UIAgent extends Agent {
             this.localStorage.removeItem(WAVEPULSE_SESSION_DATA);
         }
         if (this.sessionDataKey !== k) {
-            setTimeout(() => location.reload(), 100);
+            setTimeout(() => window.location.reload(), 100);
         }
     }
 
