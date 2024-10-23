@@ -201,7 +201,7 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
                   <Input type="text" defaultValue={appId} className="w-full" placeholder="Ex: com.application.id" onChange={(event) => setAppId(event.target.value)}/>
                 </div>
                 <div className="p-2 text-sm" style={{width: 400}}>
-                  <div className="text-sm text-gray-400">{"2) Using your phone, scan the below QR code, which contains url."}</div>
+                  <div className="text-sm text-gray-400">{"2) Using the mobile where the app is installed, scan the below QR code. Make sure the app is closed before scanning."}</div>
                 </div>
                 <div className="p-2">
                   <QRCode value={url || ''}/>
@@ -210,7 +210,7 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
                   <a className="text-sm break-all w-full underline text-center" href={url}>Copy this link</a>
                 </div>
                 <div className="p-2" style={{width: 400}}>
-                  <div className="text-sm text-gray-400">{"3) When the url is opened in phone web browser, App that has the above application id will be opened."}</div>
+                  <div className="text-sm text-gray-400">{"3) When the url is opened in phone web browser, App that has the above application id, will be started."}</div>
                 </div>
                 {/* <div className="p-2" style={{width: 400}}>
                   <div className="text-sm">{"4) Message is shown when the app is connected to WavePulse."}</div>

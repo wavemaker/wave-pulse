@@ -44,29 +44,30 @@ export const TimeLine = ({timelineLogs, clearTimelineLogs}: Props) => {
     },[timelineLogs])
     const startTime = useMemo(() => ((timelineLogs && timelineLogs[0]?.startTime) || 0), [timelineLogs && timelineLogs[0]?.startTime]);      
     const endTime =  useMemo(() => {
-        return Math.min(
-            (timelineLogs[timelineLogs.length - 1]?.endTime) || 0), startTime + 6 * 1000;
+        return Math.max(
+            ((timelineLogs[timelineLogs.length - 1]?.endTime) || 0), startTime + 6 * 1000);
     }, [timelineLogs[timelineLogs.length - 1]?.endTime, startTime]);
     const totalTime = useMemo(() => endTime - startTime, [startTime, endTime]);
     const [showTillEnd, setShowTillEnd] = useState(true);
     const [currentstartTime, setcurrentstartTime] = useState(0);
     const [currentendTime, setcurrentendTime] = useState(endTime);
     const [checkboxDataState,setcheckboxDataState] = useState(['A','N','V','P']);
-    const [minRange, setminRange]=useState(0);
-    const [maxRange, setmaxRange]=useState(60);
+    const [minRange, setminRange]=useState(startTime);
+    const [maxRange, setmaxRange]=useState(endTime);
 
 
-    const onclickCallBack = useCallback((startTime:number, _endTime:number) => {
-        setcurrentstartTime(startTime);
+    const onclickCallBack = useCallback((_startTime:number, _endTime:number) => {
+        setcurrentstartTime(_startTime);
         setcurrentendTime(_endTime);
-        setShowTillEnd(Math.abs(_endTime - endTime) <= 500);
+        setShowTillEnd(Math.abs(_endTime - endTime) <= 500 && Math.abs(_startTime - startTime) <= 500 );
     }, [currentstartTime, currentendTime]);
 
     const searchCallBack = useCallback((val1:any,val2:any) => {
-        setminRange(val1.getSeconds());
-        setmaxRange(val2.getSeconds());
+        setminRange(val1);
+        setmaxRange(val2);
     }, [minRange, maxRange]);
-
+    const _minRange = showTillEnd ? startTime : minRange;
+    const _maxRange = showTillEnd ? endTime : maxRange;
     const checkBoxDataCallBack = 
     useCallback(
         (selectedEle:string)=>{
@@ -85,58 +86,57 @@ export const TimeLine = ({timelineLogs, clearTimelineLogs}: Props) => {
 
     return (
 
-        <div className="w-full h-full flex flex-row relative">
-            <div className="flex-1 overflow-x-hidden h-full overflow-y-auto sticky top-0 w-full" >
-    
-                <div className=" bg-zinc-100 px-4 py-1 flex flex-row content-center  ">
-        
+        <div className="w-full h-full flex flex-col relative overflow-x-hidden overflow-y-auto">
+            <div className="sticky top-0 bg-white" >
+                <div className="w-full flex flex-row bg-zinc-100 px-4 py-1">
                     <div className="flex flex-1 flex-col justify-center ">
-                </div>
 
-                <div className="flex flex-1 flex-wrap flex-row content-center justify-end ">
-                <Button
-                    isIconOnly
-                    className="bg-transparent w-8 h-6 float-right"
-                    onClick={() => clearTimelineLogs()}
-                >
-                    <DeleteIcon></DeleteIcon>
-                </Button>
+                    </div>
+                    <div className="flex flex-1 flex-wrap flex-row content-center justify-end ">
+                        <Button
+                            isIconOnly
+                            className="bg-transparent w-8 h-6 float-right"
+                            onClick={() => clearTimelineLogs()}
+                        >
+                            <DeleteIcon></DeleteIcon>
+                        </Button>
+                    </div>
                 </div>
-            </div>
-            <div className='w-100 flex flex-row' style={{minHeight: '7em'}}>
-                <div className="w-3/12 flex flex-col justify-start pl-4 cursor-pointer">
-                {
-                    
-                   checkBoxData.map((d,i)=>{
-                    return  <div>
-                    <div className=" flex w-5/12 flex-row text-xs w-fit p-1" onClick={()=>checkBoxDataCallBack(d.value)}>
-                        <div className={checkboxDataState.includes(d.key) ? " text-color w-4 h-4 justify-center items-center  p-1 text-center border rounded-full flex " + logColors[d.value[0].toUpperCase()]  : 'text-color w-4 h-4 justify-center items-center  p-1 text-center border rounded-full flex   text-gray-600 bg-gray-200  border-gray-600 ' }>
-                                        {d.key}
-                        </div> 
-                        <div className="pl-2">{d.value}</div>
-                   </div></div>
-                   })
-                }
-                    
+                <div className='w-100 flex flex-row' style={{minHeight: '7em'}}>
+                    <div className="w-3/12 flex flex-col justify-start pl-4 cursor-pointer">
+                    {
+                        
+                    checkBoxData.map((d,i)=>{
+                        return  <div>
+                        <div className=" flex w-5/12 flex-row text-xs w-fit p-1" onClick={()=>checkBoxDataCallBack(d.value)}>
+                            <div className={checkboxDataState.includes(d.key) ? " text-color w-4 h-4 justify-center items-center  p-1 text-center border rounded-full flex " + logColors[d.value[0].toUpperCase()]  : 'text-color w-4 h-4 justify-center items-center  p-1 text-center border rounded-full flex   text-gray-600 bg-gray-200  border-gray-600 ' }>
+                                            {d.key}
+                            </div> 
+                            <div className="pl-2">{d.value}</div>
+                    </div></div>
+                    })
+                    }
+                        
 
+                    </div>
+                    <div className="w-9/12">
+                    {
+                    startTime <= 0  ? null : <TimelineRangeSlider 
+                        key={endTime + ''}
+                        startTime={new Date(startTime)} 
+                        endTime={new Date(endTime)} 
+                        currentstartTime={new Date(currentstartTime)} 
+                        currentendTime={new Date(showTillEnd ? endTime : currentendTime)} 
+                        searchCallBack={searchCallBack}/> 
+                    }
+                    </div>
                 </div>
-                <div className="w-9/12">
-                {
-                startTime <= 0  ? null : <TimelineRangeSlider  
-                    startTime={new Date(startTime)} 
-                    endTime={new Date(endTime)} 
-                    currentstartTime={new Date(currentstartTime)} 
-                    currentendTime={new Date(showTillEnd ? endTime : currentendTime)} 
-                    searchCallBack={searchCallBack}/> 
-                }
-                </div>
-            </div>
-
                 <div className="flex flex-row border border-x-0 py-1 w-svw sticky top-0 bg-zinc-100">
                     <div className="flex-shrink-0 text-xs text-color px-4 w-2/12 font-bold">Name</div>
                     <div className="flex-shrink-0 px-8 text-xs w-1/12 font-bold">Time (ms)</div>
                     <div className="px-8 text-xs w-9/12 font-bold">Waterfall</div>
                 </div>
+            </div>
               
             {
                 
@@ -144,12 +144,12 @@ export const TimeLine = ({timelineLogs, clearTimelineLogs}: Props) => {
                     const mx = Math.round((e.startTime - startTime) / totalTime * 100);
                     const w = Math.round((e.endTime - e.startTime) / totalTime * 100);
                     e.info = e.info || getEventInfo(e);
-                    return (checkboxDataState.includes(e.name[0]) && new Date(e.startTime).getSeconds() >= minRange  && new Date(e.endTime).getSeconds() <= maxRange)   ? (
+                    return (checkboxDataState.includes(e.name[0]) && (e.startTime >= _minRange && e.endTime <= _maxRange))   ? (
                         <div 
                             className={
                                 "flex flex-row w-svw border border-x-0 border-t-0 py-1 cursor-pointer hover:bg-zinc-50 "
                             }
-                            key={i}
+                            key={i + e.startTime}
                             >
                             <Tooltip content={e.info.desc}>
                                 <div className="flex flex-row w-2/12 px-4 items-center"> 
@@ -172,7 +172,6 @@ export const TimeLine = ({timelineLogs, clearTimelineLogs}: Props) => {
                     ) :null 
                 })
             }
-            </div>
             </div>
     );
 };

@@ -7,7 +7,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from "rea
 export const UIAgentContext = createContext<UIAgent>(null as any);
 const MAX_CONSOLE_LOGS = 500;
 const MAX_NETWORK_REQUETS = 100;
-const MAX_TIME_LINE_DURATION = 30 * 1000;
+const MAX_TIME_LINE_EVENTS = 100;
 
 export const useLocation = () => {
     const [location, setLocation] = useState(null as any);
@@ -231,8 +231,7 @@ export const useTimelineLog = () => {
                 } else {
                     newVal.splice(i, 0, logInfo);
                 }
-                while(newVal.length > 1 
-                    && (newVal[newVal.length - 1].endTime - newVal[0].startTime) > MAX_TIME_LINE_DURATION) {
+                while (newVal.length > MAX_TIME_LINE_EVENTS) {
                     newVal.shift();
                 }
                 return newVal;

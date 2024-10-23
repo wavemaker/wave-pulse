@@ -211,39 +211,37 @@ export const Network = (props: Props) => {
     return (
         <div className="w-full h-full flex flex-row relative">
             <div className="flex-1 overflow-x-hidden h-full overflow-y-auto ">
-               
-                <div className=" bg-zinc-100 px-4 py-1 flex flex-row content-center sticky top-0 w-full ">
-        
-                    <div className="flex flex-1 flex-col justify-center ">
-                    <Search 
-                        onSearchChange={onSearchChangeCallback}    
-                        searchTerm={searchTerm}
-                    />
-                </div>
-
-                <div className="flex flex-1 flex-wrap flex-row content-center justify-end">
-                    <DropdownComponent allOptions={allOptions} 
-                        itemonPressCallback={itemonPressCallback} 
-                        onSelectionChangecallBack={onSelectionChangecallBack} 
-                        selectedKeys={selectedKeys} 
-                        selectedValue={selectedValue}
-                    />
-                    <Button
-                        isIconOnly
-                        className="bg-transparent w-8 h-6 float-right"
-                        onClick={() => props.clear()}
-                    >
-                        <DeleteIcon></DeleteIcon>
-                    </Button>
-                </div>
-            </div>
-
-                <div className="flex flex-row border border-x-0 px-4 py-1 w-svw sticky top-0 bg-zinc-100">
-                    <div className="flex-shrink-0 text-xs text-color w-2/12 font-bold">Name</div>
-                    <div className="flex-shrink-0 px-8 text-xs w-1/12 font-bold">Method</div>
-                    <div className="flex-shrink-0 px-8 text-xs w-1/12 font-bold">Status</div>
-                    <div className="flex-shrink-0 px-8 text-xs w-1/12 font-bold">Time</div>
-                    <div className="px-8 text-xs w-7/12 font-bold">Waterfall</div>
+               <div className="sticky top-0">
+                    <div className=" bg-zinc-100 px-4 py-1 flex flex-row content-center w-full ">
+                        <div className="flex flex-1 flex-col justify-center ">
+                            <Search 
+                                onSearchChange={onSearchChangeCallback}    
+                                searchTerm={searchTerm}
+                            />
+                        </div>
+                        <div className="flex flex-1 flex-wrap flex-row content-center justify-end">
+                            <DropdownComponent allOptions={allOptions} 
+                                itemonPressCallback={itemonPressCallback} 
+                                onSelectionChangecallBack={onSelectionChangecallBack} 
+                                selectedKeys={selectedKeys} 
+                                selectedValue={selectedValue}
+                            />
+                            <Button
+                                isIconOnly
+                                className="bg-transparent w-8 h-6 float-right"
+                                onClick={() => props.clear()}
+                            >
+                                <DeleteIcon></DeleteIcon>
+                            </Button>
+                        </div>
+                    </div>
+                    <div className="flex flex-row border border-x-0 px-4 py-1 w-svw sticky bg-zinc-100">
+                        <div className="flex-shrink-0 text-xs text-color w-2/12 font-bold">Name</div>
+                        <div className="flex-shrink-0 px-8 text-xs w-1/12 font-bold">Method</div>
+                        <div className="flex-shrink-0 px-8 text-xs w-1/12 font-bold">Status</div>
+                        <div className="flex-shrink-0 px-8 text-xs w-1/12 font-bold">Time</div>
+                        <div className="px-8 text-xs w-7/12 font-bold">Waterfall</div>
+                    </div>
                 </div>
               
             {

@@ -41,9 +41,11 @@ class TimelineRangeSlider extends React.Component<TimelineRangeSliderProps> {
   
 
   render()  {  
+    const time = (this.endTime.getTime() - this.startTime.getTime())/1000;
+    let noOfTics = [10, 5, 2, 1].map(n => time/n).find(n => n > 10) || 6;
       return   (  
           <TimeRange 
-          ticksNumber={(this.endTime.getMinutes() - this.startTime.getMinutes()) || 6}  
+          ticksNumber={noOfTics}  
           selectedInterval={[
             new Date(this.props.currentstartTime.getTime() - this.startTime.getTime()),  
             new Date(this.props.currentendTime.getTime() - this.startTime.getTime()) ]} 
