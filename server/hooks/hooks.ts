@@ -1,5 +1,5 @@
 "use client";
-import { CALLS, EVENTS } from "@wavemaker/wavepulse-agent";
+import { CALLS, EVENTS } from "@/wavepulse/constants";
 import { AppInfo, NetworkRequest, LogInfo, PlatformInfo, TimelineEvent } from "@/types";
 import { UIAgent } from "@/wavepulse/ui-agent";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";

@@ -1,6 +1,6 @@
 import { IconBxsDownArrow, IconBxsLeftArrow, RefreshIcon } from "@/components/icons";
 import { Accordion, AccordionItem, Button, Select, SelectItem, Tab, Tabs } from "@nextui-org/react";
-import { CALLS  } from "@wavemaker/wavepulse-agent";
+import { CALLS  } from "@/wavepulse/constants";
 import { useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { UIAgentContext } from "@/hooks/hooks";
 import { WidgetNode } from '@/types';
