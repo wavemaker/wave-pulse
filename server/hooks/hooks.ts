@@ -5,6 +5,9 @@ import { UIAgent } from "@/wavepulse/ui-agent";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
 export const UIAgentContext = createContext<UIAgent>(null as any);
+const MAX_CONSOLE_LOGS = 500;
+const MAX_NETWORK_REQUETS = 100;
+const MAX_TIME_LINE_DURATION = 30 * 1000;
 
 export const useLocation = () => {
     const [location, setLocation] = useState(null as any);
@@ -34,7 +37,13 @@ export const useConsole = () => {
     useEffect(() => {
         const destroy = uiAgent.subscribe(EVENTS.CONSOLE.LOG, (args) => {
             const logInfo = args[0] as LogInfo;
-            setLogs(logs => [...logs, {...logInfo}]);
+            setLogs((logs) => {
+                const newVal = [...logs, {...logInfo}];
+                while (newVal.length > MAX_CONSOLE_LOGS) {
+                    newVal.shift();
+                }
+                return newVal;
+            });
         });
         return destroy;
     }, []);
@@ -157,7 +166,13 @@ export const useNetworkRequests = () => {
                 req: req,
                 res: res
             } as NetworkRequest;
-            setRequests((requests) => [...requests, {...request}]);
+            setRequests((requests) => {
+                const newVal = [...requests, {...request}];
+                while (newVal.length > MAX_NETWORK_REQUETS) {
+                    newVal.shift();
+                }
+                return newVal;
+            });
         });
         return destroy;
     }, [requests]);
@@ -215,6 +230,10 @@ export const useTimelineLog = () => {
                     newVal.push(logInfo);
                 } else {
                     newVal.splice(i, 0, logInfo);
+                }
+                while(newVal.length > 1 
+                    && (newVal[newVal.length - 1].endTime - newVal[0].startTime) > MAX_TIME_LINE_DURATION) {
+                    newVal.shift();
                 }
                 return newVal;
             });
