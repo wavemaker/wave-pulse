@@ -17,7 +17,7 @@ import {BreadcrumbsComponent} from "@/components/breadcrumbs";
 import { TimeLine } from "./timeline";
 import {Session} from './session';
 import QRCode from "react-qr-code";
-import { ChevronDownIcon } from "@nextui-org/shared-icons";
+import { ChevronDownIcon, Plus, PlusFilledIcon } from "@nextui-org/shared-icons";
 import { UIAgent } from "@/wavepulse/ui-agent";
 
 const connectOptions = {
@@ -28,6 +28,10 @@ const connectOptions = {
   webpreview: {
     label: 'Connect to Web Preview',
     description: 'Connect to a WaveMaker React Native web preview.'
+  },
+  import: {
+    label: 'Import data',
+    description: 'Upload a zip file that was earlier exported from WavePulse .'
   },
   /*expo: {
     label: 'Connect to Expo Go',
@@ -87,6 +91,14 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
   },[]);
   return (
     <div className="w-full h-full flex flex-col">
+      <Button 
+        className="w-40 px-4 bg-transparent absolute right-0 h-8"
+        onClick={() => {
+          window.open(location.href.split(channelId)[0], '_blank');
+        }}>
+        <PlusFilledIcon width={16} height={16}/>
+        New Session
+      </Button>
       {isConnected ? 
         (<Tabs aria-label="Options" radius="none" variant="underlined" classNames={{
           base: 'w-full flex debug-panel-tabs-list',
@@ -188,6 +200,9 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
                   <DropdownItem key="webpreview" description={connectOptions.webpreview.description}>
                     {connectOptions.webpreview.label}
                   </DropdownItem>
+                  <DropdownItem key="import" description={connectOptions.import.description}>
+                    {connectOptions.import.label}
+                  </DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </ButtonGroup>
@@ -232,6 +247,27 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
     channelId: '${channelId}'
   });
                 `}</pre>
+              </div>) : null
+            }
+            {
+              selectedConnectOption[0] === 'import' ? (<div style={{minHeight: 600}} 
+                className="flex flex-col content-center items-center flex-wrap">
+                <div className="p-2 text-sm" style={{width: 400}}>
+                  <div className="flex icontent-center py-12 w-full">
+                    <input
+                        type="file"
+                        accept=".zip"
+                        onChange={(event)=>handleFileSelect(event)}
+                        style={{ display: 'none' }}
+                        id="fileInput"
+                    />
+                    <label htmlFor="fileInput" className=" w-full cursor-pointer">
+                      <div className="flex flex-row items-center justify-center">
+                        <IconImport color="#666" width={20} height={20}/> {" Click here to upload file."}
+                      </div>
+                    </label>
+                </div>
+                </div>
               </div>) : null
             }
             {
