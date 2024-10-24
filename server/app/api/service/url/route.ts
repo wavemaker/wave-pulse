@@ -16,7 +16,7 @@ function getIpAddress() {
     };
     return 'localhost';
 }
-const BASE_URL = process.env.WAVEPULSE_BASE_URL || `http://${getIpAddress()}:3000`;
+const BASE_URL = process.env.WAVEPULSE_BASE_URL || `http://${getIpAddress()}:3000/wavepulse`;
 export async function GET(
     request: NextRequest
   ) {
@@ -24,14 +24,14 @@ export async function GET(
     const appId = searchParams.get('appId');
     const expoUrl = searchParams.get('expoUrl');
     const channelId = searchParams.get('channelId');
+    let launchUrl = '';
     if (appId) {
-        return new Response(`${BASE_URL}/api/connect?channelId=${channelId}&appId=${appId}&wavepulseURL=${BASE_URL}`, {
-            status: 200
-        });
+        launchUrl = `${appId}://wavepulse/connect?channelId=${channelId}&url=${BASE_URL}`;
     }
     if (expoUrl) {
-        return new Response(`${BASE_URL}/api/connect?channelId=${channelId}&expoUrl=${expoUrl}&wavepulseURL=${BASE_URL}`, {
-            status: 200
-        });
+        launchUrl = `${expoUrl}/--/wavepulse/connect?channelId=${channelId}&url=${BASE_URL}`;
     }
+    return new Response(`${BASE_URL}/connect?launchUrl=${encodeURIComponent(launchUrl)}`, {
+        status: 200
+    });
 }
