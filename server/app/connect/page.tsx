@@ -2,9 +2,9 @@
 
 import { Button } from '@nextui-org/react';
 import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from "react";
+import { Suspense, useCallback, useEffect, useState } from "react";
 
-export default function ConnectPage() {
+export function ConnectPage() {
     const searchParams = useSearchParams();
     const [time, setTime] = useState(5);
     const launch = useCallback(() => {
@@ -51,4 +51,12 @@ export default function ConnectPage() {
             )
         }
     </div>);
+}
+
+export default () => {
+    return (
+        <Suspense>
+            <ConnectPage />
+        </Suspense>
+    )
 }
