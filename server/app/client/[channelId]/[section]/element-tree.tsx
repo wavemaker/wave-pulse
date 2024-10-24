@@ -190,7 +190,7 @@ export const ElementTree = (props: Props) => {
                                         }}>
                                         {Object.keys(styles|| []).map((k) => (
                                             <SelectItem key={k}>
-                                                {k}
+                                                {styles[k].__label || k}
                                             </SelectItem>
                                         ))}
                                     </Select>
@@ -201,9 +201,14 @@ export const ElementTree = (props: Props) => {
                                             <Accordion key={e.name}
                                                 defaultExpandedKeys={[e.name]}
                                                 isCompact={true}>
-                                                <AccordionItem key={e.name} title={e.name} classNames={{
-                                                    heading: 'bg-zinc-200 px-1',
-                                                    title: 'text-sm'
+                                                <AccordionItem 
+                                                    key={e.name}
+                                                    title={e.source === 'inline'? '  ' : (e.cssSelector || e.name)}
+                                                    subtitle={e.source}
+                                                    classNames={{
+                                                        heading: 'bg-zinc-200 px-1',
+                                                        title: 'text-sm',
+                                                        titleWrapper: 'flex-row justify-between'
                                                 }}>
                                                     {Object.keys(e.value || [])
                                                         .map((sname: any) => {
