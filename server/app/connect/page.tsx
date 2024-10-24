@@ -2,7 +2,6 @@
 
 import { Button } from '@nextui-org/react';
 import { useSearchParams } from 'next/navigation';
-import { useRouter } from 'next/router';
 import { useCallback, useEffect, useState } from "react";
 
 export default function ConnectPage() {
@@ -12,7 +11,7 @@ export default function ConnectPage() {
         const launchUrl = decodeURIComponent(searchParams.get('launchUrl') || '').trim();
         if (!launchUrl.startsWith('http')
             && !launchUrl.startsWith('://')) {
-            location.href= launchUrl;
+            window.location.href= launchUrl;
         }
     }, [searchParams.get('launchUrl')]);
     useEffect(() => {
