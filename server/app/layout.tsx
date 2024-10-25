@@ -15,8 +15,10 @@ export const metadata: Metadata = {
   },
   description: siteConfig.description,
   icons: {
-    icon: "/favicon.ico",
-  },
+    icon: '/wavepulse/favicon.png',
+    shortcut: '/wavepulse/favicon.png',
+    apple: '/wavepulse/favicon.png'
+  }
 };
 
 export const viewport: Viewport = {
