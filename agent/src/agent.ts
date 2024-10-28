@@ -56,7 +56,7 @@ export class Agent {
             this.notify(eventName, 'call', [{
                 target: target,
                 args: args
-            }]);
+            }], false);
         });
     }
 
