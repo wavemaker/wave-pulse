@@ -58,6 +58,20 @@ export const useConsole = () => {
     return {logs, clearLogs};
 };
 
+export const useAppConnected = () => {
+    const uiAgent = useContext(UIAgentContext);
+    const [ showReloadAlert, setShowReloadAlert ] = useState(false);
+    useEffect(() => {
+        uiAgent.onInvoke(CALLS.HANDSHAKE.RELOAD, () => {
+            if (uiAgent.isConnected) {
+                setShowReloadAlert(true);
+            }
+            return Promise.resolve('Hello');
+        });
+    }, [uiAgent])
+    return { showReloadAlert };
+};
+
 export const useAppInfo = () => {
     const uiAgent = useContext(UIAgentContext);
     const [appInfo, setAppInfo] = useState({} as AppInfo);

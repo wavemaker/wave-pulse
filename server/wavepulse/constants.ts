@@ -26,6 +26,7 @@ export const CALLS = {
         INFO: 'GET_PLATFORM_INFO',
     },
     HANDSHAKE: {
+        RELOAD: 'RELOAD',
         WISH: 'SAY_HELLO'
     },
     WIDGET: {

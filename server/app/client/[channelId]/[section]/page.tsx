@@ -1,6 +1,6 @@
 "use client";
 
-import { UIAgentContext, useAppInfo, useComponentTree, useConsole, useLocalStorage, useLocation, useNetworkRequests, usePlatformInfo, useStorageEntries, useTimelineLog } from "@/hooks/hooks";
+import { UIAgentContext, useAppConnected, useAppInfo, useComponentTree, useConsole, useLocalStorage, useLocation, useNetworkRequests, usePlatformInfo, useStorageEntries, useTimelineLog } from "@/hooks/hooks";
 import { Tabs, Tab, Button, Input, DropdownMenu, DropdownItem, Dropdown, DropdownTrigger, ButtonGroup } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useContext, useState, useEffect , useMemo, useCallback} from "react";
@@ -10,6 +10,7 @@ import { Console } from "./console";
 import { Storage } from "./storage";
 import { IconExport, IconImport } from "@/components/icons";
 import { Settings } from "./settings";
+import { ReloadAlert } from "./reloadalert";
 import { SaveDataDialog } from "./savedata";
 import { ElementTree } from "./element-tree";
 import { WidgetNode } from "@/types";
@@ -55,6 +56,7 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
   const [isConnected, setIsConnected] = useState(false);
   const [selectedWidget, setSelectedWidget] = useState<WidgetNode>(null as any);
   const [breadcrumbData, setBreadcrumbData]=useState<WidgetNode[]>();
+  const { showReloadAlert } = useAppConnected();
   //should get props.path into this page
   const [sessionDataArr, setSessionDataArr] = useState([]);
   const [appId, setAppId] = useState(localStorage.getItem('wavepulse.lastopenedapp.id') || 'com.application.id');   //should get props.path into this page
@@ -296,6 +298,7 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
           </div>
         )}
       <SaveDataDialog isOpen={isSaveDataOpened} onClose={() => setIsSaveDataOpen(false)}></SaveDataDialog>
+      <ReloadAlert isOpen={showReloadAlert}></ReloadAlert>
       <Settings isOpen={isSettingsOpened} onClose={() => setIsSettingsOpen(false)}></Settings>
       <div className="bg-zinc-100 py-1 px-8 w-full flex sticky bottom-0 flex-row justify-between content-center border-t-2 border-zinc-300">
         <div className="flex flex-row content-center">
