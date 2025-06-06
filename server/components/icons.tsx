@@ -1,6 +1,7 @@
 import * as React from "react";
 
 import { IconSvgProps } from "@/types";
+import exp from "constants";
 
 export const Logo: React.FC<IconSvgProps> = ({
   size = 36,
@@ -343,3 +344,37 @@ export const  IconImport: React.FC<IconSvgProps> = (props: React.SVGProps<SVGSVG
   );
 }
 
+export const  DatabaseIcon: React.FC<IconSvgProps> = (props: React.SVGProps<SVGSVGElement>) => {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      width="1em"
+      height="1em"
+      {...props}
+    >
+      <g fill="none" stroke="currentColor" strokeWidth="1.5">
+        <path d="M5 12v6s0 3 7 3s7-3 7-3v-6"></path>
+        <path d="M5 6v6s0 3 7 3s7-3 7-3V6"></path>
+        <path d="M12 3c7 0 7 3 7 3s0 3-7 3s-7-3-7-3s0-3 7-3Z"></path>
+      </g>
+    </svg>
+  )
+}
+
+
+export const  DatabaseTableIcon: React.FC<IconSvgProps> = (props: React.SVGProps<SVGSVGElement>) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 undefined undefined"
+      width="1em"
+      height="1em"
+      {...props}
+    >
+      <path
+        fill="currentColor"
+        d="M16 3v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2zm-1 0V2a1 1 0 0 0-1-1H2a1 1 0 0 0-1 1v1zm0 1H1v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1zM4.496 7a.5.5 0 0 1 0 1H2.495a.5.5 0 0 1 0-1zm5.218 0c.158 0 .286.224.286.5s-.128.5-.286.5H6.286C6.128 8 6 7.776 6 7.5s.128-.5.286-.5zM4.496 5a.5.5 0 0 1 0 1H2.495a.5.5 0 0 1 0-1zm5.218 0c.158 0 .286.224.286.5s-.128.5-.286.5H6.286C6.128 6 6 5.776 6 5.5s.128-.5.286-.5zM4.496 9a.5.5 0 0 1 0 1H2.495a.5.5 0 0 1 0-1zm5.218 0c.158 0 .286.224.286.5s-.128.5-.286.5H6.286C6.128 10 6 9.776 6 9.5s.128-.5.286-.5zm-5.218 2a.5.5 0 0 1 0 1H2.495a.5.5 0 0 1 0-1zm5.218 0c.158 0 .286.224.286.5s-.128.5-.286.5H6.286C6.128 12 6 11.776 6 11.5s.128-.5.286-.5zm-5.218 2a.5.5 0 0 1 0 1H2.495a.5.5 0 0 1 0-1zm9-6a.5.5 0 0 1 0 1h-2.001a.5.5 0 0 1 0-1zm0-2a.5.5 0 0 1 0 1h-2.001a.5.5 0 0 1 0-1zm0 4a.5.5 0 0 1 0 1h-2.001a.5.5 0 0 1 0-1zm0 2a.5.5 0 0 1 0 1h-2.001a.5.5 0 0 1 0-1zm0 2a.5.5 0 0 1 0 1h-2.001a.5.5 0 0 1 0-1zm-3.782 0c.158 0 .286.224.286.5s-.128.5-.286.5H6.286C6.128 14 6 13.776 6 13.5s.128-.5.286-.5z"
+      ></path>
+    </svg>
+  )
+}

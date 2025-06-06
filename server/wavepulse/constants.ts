@@ -25,6 +25,10 @@ export const CALLS = {
     PLATFORM: {
         INFO: 'GET_PLATFORM_INFO',
     },
+    DATABASE: {
+        INFO: 'LIST_DATABASES',
+        EXECUTE_SQL: 'EXECUTE_SQL'
+    },
     HANDSHAKE: {
         RELOAD: 'RELOAD',
         WISH: 'SAY_HELLO'

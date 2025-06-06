@@ -1,6 +1,6 @@
 "use client";
 import { CALLS, EVENTS } from "@/wavepulse/constants";
-import { AppInfo, NetworkRequest, LogInfo, PlatformInfo, TimelineEvent } from "@/types";
+import { AppInfo, NetworkRequest, LogInfo, PlatformInfo, TimelineEvent, DatabaseInfo } from "@/types";
 import { UIAgent } from "@/wavepulse/ui-agent";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 
@@ -135,6 +135,36 @@ export const usePlatformInfo = () => {
         uiAgent.currentSessionData.platformInfo = platformInfo;
     }, [platformInfo]);
     return {platformInfo, refreshPlatformInfo};
+};
+
+export const useDatabases = () => {
+    const uiAgent = useContext(UIAgentContext);
+    const [databases, setDatbases] = useState([] as DatabaseInfo[]);
+    const executeSQl = useCallback((dbName: string, sql: string) => {
+        return uiAgent.invoke(CALLS.DATABASE.EXECUTE_SQL, [dbName, sql])
+        .then((args: any) => {
+            return {
+                rowsEffected: args.rowsEffected,
+                rows: args.rows as any[]
+            }
+        });
+    }, [databases]);
+    const refreshDatabases = useCallback(() => {
+        uiAgent.invoke(CALLS.DATABASE.INFO, [])
+        .then((args: any) => {
+            setDatbases(args as DatabaseInfo[]);
+        });
+    }, [databases]);
+    useEffect(() => {
+        setDatbases(uiAgent.sessionData.databases || []);
+    }, [uiAgent.sessionData]);
+    useEffect(() => {
+        refreshDatabases();
+    }, []);
+    useEffect(() => {
+        uiAgent.currentSessionData.databases = databases;
+    }, [databases]);
+    return {databases, executeSQl};
 };
 
 export const useVariables = () => {

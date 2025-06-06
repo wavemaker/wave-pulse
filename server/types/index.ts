@@ -65,6 +65,16 @@ export type SessionData = {
     index:number,
 };
 
+export type DatabaseInfo = {
+    name: string,
+    tables: TableInfo[]
+};
+
+export type TableInfo = {
+    name: string,
+    entityName: string
+};
+
 export type IconSvgProps = SVGProps<SVGSVGElement> & {
   size?: number;
 };

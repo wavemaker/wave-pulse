@@ -1,6 +1,6 @@
 "use client";
 
-import { UIAgentContext, useAppConnected, useAppInfo, useComponentTree, useConsole, useLocalStorage, useLocation, useNetworkRequests, usePlatformInfo, useStorageEntries, useTimelineLog } from "@/hooks/hooks";
+import { UIAgentContext, useAppConnected, useAppInfo, useComponentTree, useConsole, useDatabases, useLocalStorage, useLocation, useNetworkRequests, usePlatformInfo, useStorageEntries, useTimelineLog } from "@/hooks/hooks";
 import { Tabs, Tab, Button, Input, DropdownMenu, DropdownItem, Dropdown, DropdownTrigger, ButtonGroup } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { useContext, useState, useEffect , useMemo, useCallback} from "react";
@@ -20,6 +20,7 @@ import {Session} from './session';
 import QRCode from "react-qr-code";
 import { ChevronDownIcon, Plus, PlusFilledIcon } from "@nextui-org/shared-icons";
 import { UIAgent } from "@/wavepulse/ui-agent";
+import { DatabaseExplorer } from "./database-explorer";
 
 const connectOptions = {
   mobile: {
@@ -48,6 +49,7 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
   const {requests, clearRequests} = useNetworkRequests();
   const {timelineLogs, clearTimelineLogs} = useTimelineLog();
   const {storage, refreshStorage} = useStorageEntries();
+  const {databases, executeSQl} = useDatabases();
   const {logs, clearLogs} = useConsole();
   const {componentTree, refreshComponentTree, highlight} = useComponentTree();
   const [isSettingsOpened, setIsSettingsOpen] = useState(false);
@@ -157,6 +159,9 @@ function PulsePage({ section, refresh, channelId }: { section: string, refresh: 
           <Tab key="storage" title="Storage">
             <Storage data={storage} refreshStorage={refreshStorage}></Storage>
           </Tab>
+          {databases && databases.length ? (<Tab key="database" title="Database">
+            <DatabaseExplorer databases={databases} onExecute={executeSQl}></DatabaseExplorer> 
+          </Tab>) : null} 
           <Tab key="info" title="Info">
             <Info appInfo={appInfo} platformInfo={platformInfo} refresh={() => {
               refreshAppInfo();
